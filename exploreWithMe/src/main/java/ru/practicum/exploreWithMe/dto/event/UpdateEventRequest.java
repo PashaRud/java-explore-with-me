@@ -4,6 +4,7 @@ import lombok.*;
 import ru.practicum.exploreWithMe.dto.categories.CategoryDto;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +22,7 @@ public class UpdateEventRequest {
     private Integer categoryId;
     private String description;
     @NotBlank
-    private String eventDate;
+    private LocalDateTime eventDate;
     @NotBlank
     private Boolean paid;
     private Integer participantLimit;

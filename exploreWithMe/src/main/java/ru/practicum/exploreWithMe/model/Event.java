@@ -37,9 +37,9 @@ public class Event {
     @JoinColumn(name = "initiator_id")
     private User initiator;
     @Column(name = "lat")
-    private float lat;
+    private Float lat;
     @Column(name = "ion")
-    private float lon;
+    private Float lon;
     @Column(name = "paid")
     private boolean paid;
     @Column(name = "participant_limit")

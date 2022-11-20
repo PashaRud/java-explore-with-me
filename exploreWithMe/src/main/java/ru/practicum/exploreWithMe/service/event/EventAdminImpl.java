@@ -110,7 +110,7 @@ public class EventAdminImpl implements EventAdminService {
             event.setDescription(updateEventRequest.getDescription());
         }
         if (updateEventRequest.getEventDate() != null) {
-            event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
+            event.setEventDate(updateEventRequest.getEventDate());
         }
         if (updateEventRequest.getPaid() != null) {
             event.setPaid(updateEventRequest.getPaid());
