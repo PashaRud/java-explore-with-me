@@ -1,20 +1,19 @@
 package ru.practicum.exploreWithMe.dto.compilation;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.exploreWithMe.dto.event.EventShortDto;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CompilationDto {
-    private List<EventShortDto> events;
+    private Set<EventShortDto> events;
     @NotBlank
     private Long id;
     @NotBlank

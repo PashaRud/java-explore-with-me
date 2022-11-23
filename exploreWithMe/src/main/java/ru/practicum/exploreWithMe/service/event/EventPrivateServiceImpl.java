@@ -16,30 +16,34 @@ import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.exception.ValidateException;
 import ru.practicum.exploreWithMe.mapper.event.EventFullMapper;
 import ru.practicum.exploreWithMe.mapper.request.RequestMapper;
+import ru.practicum.exploreWithMe.mapper.user.UserMapper;
 import ru.practicum.exploreWithMe.model.Event;
 import ru.practicum.exploreWithMe.model.Request;
+import ru.practicum.exploreWithMe.repository.category.CategoryRepository;
 import ru.practicum.exploreWithMe.repository.event.EventRepository;
+import ru.practicum.exploreWithMe.repository.request.RequestRepository;
 import ru.practicum.exploreWithMe.repository.user.UserRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static ru.practicum.exploreWithMe.mapper.event.EventFullMapper.eventToEventShortDto;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
-public class EventPrivateImpl implements EventPrivateService {
+public class EventPrivateServiceImpl implements EventPrivateService {
 
     private final EventRepository repository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
-    private final EventFullMapper mapper;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
 
     @Override
@@ -48,7 +52,7 @@ public class EventPrivateImpl implements EventPrivateService {
         Pageable pageable = FromSizeRequest.of(from, size);
 
         List<EventShortDto> eventShortDtos = repository.findByInitiatorId(userId, pageable).stream()
-                .map(mapper::eventToEventShortDto)
+                .map(event ->eventToEventShortDto(event))
                 .collect(toList());
         return eventShortDtos;
     }
@@ -60,21 +64,22 @@ public class EventPrivateImpl implements EventPrivateService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + updateEventRequest.getEventId() +
                         " not found."));
 
-        if (!userId.equals(userRepository.findByEventId(updateEventRequest.getEventId()))) {
+//        if (!userId.equals(userRepository.findByEventId(updateEventRequest.getEventId()))) {
+        if (!userId.equals(userRepository.findById(updateEventRequest.getEventId()).get())) {
             throw new ForbiddenException("This user is not the initiator");
         }
         if (updateEventRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventRequest.getAnnotation());
         }
         if (updateEventRequest.getCategoryId() != null) {
-            //Добавить категорию
+            event.setCategory(categoryRepository.findById(updateEventRequest.getCategoryId()).get());
         }
         if (updateEventRequest.getDescription() != null) {
             event.setDescription(updateEventRequest.getDescription());
         }
 
         if (updateEventRequest.getEventDate() != null) {
-            event.setEventDate(updateEventRequest.getEventDate());
+            event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
         }
 
         if (updateEventRequest.getPaid() != null) {
@@ -95,7 +100,7 @@ public class EventPrivateImpl implements EventPrivateService {
         if (event.getState().equals(State.CANCELED)) {
             event.setState(State.PENDING);
         }
-        EventFullDto dto = mapper.eventToEventFullDto(repository.save(event));
+        EventFullDto dto = EventFullMapper.eventToEventFullDto(repository.save(event));
 
         return dto;
     }
@@ -104,29 +109,29 @@ public class EventPrivateImpl implements EventPrivateService {
     public EventFullDto postEvent(Long userId, NewEventDto dto) {
         userValidation(userId);
         LocalDateTime now = LocalDateTime.now();
-        if (dto.getEventDate().isBefore(now.plusHours(2))) {
+        if (LocalDateTime.parse(dto.getEventDate(), formatter).isBefore(now.plusHours(2))) {
             throw new ValidateException("Cannot be published closer than 2 hours before the start of the event");
         }
 
-        Event event = new Event(0,
+        Event event = new Event(0L,
                 dto.getAnnotation(),
                 dto.getDescription(),
-
-
+                categoryRepository.findById(dto.getCategory()).get(),
                 //примерно так
-                categoryRepository.findById(dto.getCategory().getId()),
                 dto.getTitle(),
                 now,
-                null,
-                dto.getEventDate(),
-                dto.getInitiator(),
+                now,
+                LocalDateTime.parse(dto.getEventDate(), formatter),
+                0,
+                userRepository.findById(userId).get(),
                 dto.getLocation().getLat(),
                 dto.getLocation().getLon(),
                 dto.isPaid(),
                 dto.getParticipantLimit(),
-                dto.isRequestModeration(),
+                dto.getRequestModeration(),
                 State.PENDING);
-        EventFullDto eventFullDto = mapper.eventToEventFullDto(repository.save(event));
+        repository.save(event);
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event);
         return eventFullDto;
     }
 
@@ -136,7 +141,7 @@ public class EventPrivateImpl implements EventPrivateService {
         userValidation(userId);
         Event event = repository.findById(eventId).get();
         initiatorValidation(userId, event.getInitiator().getId());
-        EventFullDto eventFullDto = mapper.eventToEventFullDto(repository.save(event));
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.save(event));
 
         return eventFullDto;
     }
@@ -151,7 +156,7 @@ public class EventPrivateImpl implements EventPrivateService {
             throw new ValidateException("Only PENDING state events can be cancelled");
         }
         event.setState(State.CANCELED);
-        EventFullDto eventFullDto = mapper.eventToEventFullDto(repository.save(event));
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.save(event));
         return eventFullDto;
     }
 
@@ -162,8 +167,6 @@ public class EventPrivateImpl implements EventPrivateService {
         Event event = repository.findById(eventId).get();
         initiatorValidation(userId, event.getInitiator().getId());
 
-
-        //Примерный метод
         List<ParticipationRequestDto> dtos = requestRepository.findByEventId(eventId).stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
@@ -174,7 +177,7 @@ public class EventPrivateImpl implements EventPrivateService {
     public ParticipationRequestDto confirmRequest(Long userId, Long eventId, Long reqId) {
         eventValidation(eventId);
         userValidation(userId);
-        EventFullDto eventFullDto = mapper.eventToEventFullDto(repository.findById(eventId).get());
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.findById(eventId).get());
         if (!eventFullDto.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Can only be confirmed by the initiator");
         }
@@ -197,7 +200,7 @@ public class EventPrivateImpl implements EventPrivateService {
         eventValidation(eventId);
         userValidation(userId);
 
-        EventFullDto eventFullDto = mapper.eventToEventFullDto(repository.findById(eventId).get());
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.findById(eventId).get());
         if (!eventFullDto.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Can only be confirmed by the initiator");
         }
@@ -226,7 +229,7 @@ public class EventPrivateImpl implements EventPrivateService {
         }
     }
 
-    private void initiatorValidation(long userId, long initiatorId) {
+    private void initiatorValidation(Long userId, Long initiatorId) {
         if (userId != initiatorId) {
             throw new ValidateException("Only the creator of the event can perform this action on it.");
         }

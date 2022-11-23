@@ -2,14 +2,19 @@ package ru.practicum.exploreWithMe.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.dto.user.UserDto;
 import ru.practicum.exploreWithMe.service.user.UserService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-@Slf4j
+
 @RestController
+@Slf4j
+@Validated
 @RequestMapping(path = "/admin/users")
 @RequiredArgsConstructor
 public class UserAdminController {
@@ -18,8 +23,8 @@ public class UserAdminController {
 
     @GetMapping
     public List<UserDto> getUsers(@RequestParam List<Long> ids,
-                                  @RequestParam(defaultValue = "0") int from,
-                                  @RequestParam(defaultValue = "10") int size) {
+                                  @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                  @RequestParam(defaultValue = "10") @Positive int size) {
         return userService.getUsers(ids, from, size);
     }
 

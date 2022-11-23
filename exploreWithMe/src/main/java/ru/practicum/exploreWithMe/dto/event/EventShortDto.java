@@ -15,13 +15,15 @@ import java.time.LocalDateTime;
 @Builder
 public class EventShortDto {
     private Long id;
+    private String annotation;
     @NotBlank
     private CategoryDto category;
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
     @NotBlank
-    private LocalDateTime eventDate;
+    private String eventDate;
     @NotBlank
     private UserShortDto initiator;
+    private Integer participantLimit;
     @NotBlank
     private boolean paid;
     @NotBlank

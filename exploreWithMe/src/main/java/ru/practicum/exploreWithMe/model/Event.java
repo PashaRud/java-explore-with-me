@@ -33,19 +33,21 @@ public class Event {
     private LocalDateTime publishedOn;
     @Column(name = "event_date")
     private LocalDateTime eventDate;
+    @Column(name = "confirmed_requests")
+    private Integer confirmedRequests;
     @ManyToOne
     @JoinColumn(name = "initiator_id")
     private User initiator;
     @Column(name = "lat")
     private Float lat;
-    @Column(name = "ion")
+    @Column(name = "lon")
     private Float lon;
     @Column(name = "paid")
-    private boolean paid;
+    private Boolean paid;
     @Column(name = "participant_limit")
-    private int participantLimit;
+    private Integer participantLimit;
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private Boolean requestModeration;
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
     private State state;

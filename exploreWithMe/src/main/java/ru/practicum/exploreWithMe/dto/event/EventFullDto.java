@@ -19,13 +19,12 @@ public class EventFullDto {
     private Long id;
     @NotBlank
     private String annotation;
-    @NotBlank
     private CategoryDto category;
-    private Long confirmedRequests;
-    private LocalDateTime createdOn;
+    private Integer confirmedRequests;
+    private String createdOn;
     private String description;
     @NotBlank
-    private LocalDateTime eventDate;
+    private String eventDate;
     @NotBlank
     private UserShortDto initiator;
     @NotBlank
@@ -33,7 +32,7 @@ public class EventFullDto {
     @NotBlank
     private boolean paid;
     private int participantLimit;
-    private LocalDateTime publishedOn;
+    private String publishedOn;
     private boolean requestModeration;
     @NotBlank
     private String title;

@@ -11,7 +11,6 @@ import ru.practicum.exploreWithMe.dto.event.UpdateEventRequest;
 import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.exception.ValidateException;
-import ru.practicum.exploreWithMe.mapper.event.EventFullMapper;
 import ru.practicum.exploreWithMe.model.Event;
 import ru.practicum.exploreWithMe.repository.event.EventRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
@@ -23,16 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static ru.practicum.exploreWithMe.mapper.event.EventFullMapper.eventToEventFullDto;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class EventAdminImpl implements EventAdminService {
+public class EventAdminServiceImpl implements EventAdminService {
 
     private final EventRepository repository;
     private final EntityManager entityManager;
-    private final EventFullMapper mapper;
-
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
@@ -87,7 +85,7 @@ public class EventAdminImpl implements EventAdminService {
         session.disableFilter("dateFilter");
 
         List<EventFullDto> eventFullDtos = events.stream()
-                .map(mapper::eventToEventFullDto)
+                .map(event -> eventToEventFullDto(event))
                 .collect(toList());
 
         return eventFullDtos;
@@ -110,7 +108,7 @@ public class EventAdminImpl implements EventAdminService {
             event.setDescription(updateEventRequest.getDescription());
         }
         if (updateEventRequest.getEventDate() != null) {
-            event.setEventDate(updateEventRequest.getEventDate());
+            event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
         }
         if (updateEventRequest.getPaid() != null) {
             event.setPaid(updateEventRequest.getPaid());
@@ -127,7 +125,7 @@ public class EventAdminImpl implements EventAdminService {
 
         event = repository.save(event);
 
-        return mapper.eventToEventFullDto(event);
+        return eventToEventFullDto(event);
     }
 
     @Override
@@ -142,7 +140,7 @@ public class EventAdminImpl implements EventAdminService {
             throw new ValidateException("Too late to update this event.");
         }
         event.setState(State.PUBLISHED);
-        EventFullDto eventDto = mapper.eventToEventFullDto(repository.save(event));
+        EventFullDto eventDto = eventToEventFullDto(repository.save(event));
         return eventDto;
     }
 
@@ -155,7 +153,7 @@ public class EventAdminImpl implements EventAdminService {
             throw new ValidateException("Cannot be rejected");
         }
         event.setState(State.CANCELED);
-        EventFullDto eventDto = mapper.eventToEventFullDto(repository.save(event));
+        EventFullDto eventDto = eventToEventFullDto(repository.save(event));
         return eventDto;
     }
 }

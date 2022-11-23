@@ -3,6 +3,7 @@ package ru.practicum.exploreWithMe.dto.event;
 import lombok.*;
 import ru.practicum.exploreWithMe.dto.categories.CategoryDto;
 import ru.practicum.exploreWithMe.dto.location.Location;
+import ru.practicum.exploreWithMe.dto.user.UserDto;
 import ru.practicum.exploreWithMe.dto.user.UserShortDto;
 import ru.practicum.exploreWithMe.model.User;
 
@@ -19,19 +20,18 @@ public class NewEventDto {
     @NotBlank
     private String annotation;
     @NotBlank
-    private CategoryDto category;
+    private Long category;
     private String description;
     @NotBlank
-    private LocalDateTime eventDate;
+    private String eventDate;
     @NotBlank
     @NotBlank
     private Location location;
     @NotBlank
     private boolean paid;
-    private User initiator;
-    private int participantLimit;
-    private boolean requestModeration;
+//    private UserDto initiator;
+    private Integer participantLimit;
+    private Boolean requestModeration;
     @NotBlank
     private String title;
-    private LocalDateTime createdOn;
 }

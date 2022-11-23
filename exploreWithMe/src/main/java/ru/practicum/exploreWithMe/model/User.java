@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "users")
 public class User {
 
@@ -19,7 +20,6 @@ public class User {
     private String name;
     @Column(name = "email")
     private String email;
-//    Проверить нужна ли валидация или параметры приходят уже отвалидированные
 
     public User(long id, String name) {
         this.id = id;

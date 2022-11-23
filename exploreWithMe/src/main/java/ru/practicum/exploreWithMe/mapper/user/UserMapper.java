@@ -23,8 +23,14 @@ public class UserMapper {
                 userDto.getName());
     }
 
-    public static User toShortUser(UserShortDto userDto) {
-        return new User(userDto.getId(), userDto.getName());
+    public static User toUserFromShortDto(UserShortDto userShortDto) {
+        return new User(userShortDto.getId(),
+                userShortDto.getName());
+    }
+
+    public static UserShortDto toShortUserDto(User user) {
+        return new UserShortDto(user.getId(),
+                user.getName());
     }
 
     public static List<UserDto> toUserDtoList(Iterable<User> users) {
