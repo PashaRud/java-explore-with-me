@@ -7,13 +7,12 @@ import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class CategoryDto {
-    @NotBlank
-    @Positive
+
     private Long id;
-    @NotBlank
     private String name;
 }

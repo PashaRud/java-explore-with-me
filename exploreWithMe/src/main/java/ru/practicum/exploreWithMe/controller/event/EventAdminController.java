@@ -11,21 +11,22 @@ import ru.practicum.exploreWithMe.service.event.EventAdminService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 @RestController
 @Slf4j
-@Validated
+//@Validated
 @RequestMapping(path = "/admin/events")
 @RequiredArgsConstructor
 public class EventAdminController {
-
     private final EventAdminService service;
 
 
     @GetMapping
-    public List<EventFullDto> getEvents(@RequestParam(name = "users", required = false) List<Integer> users,
+    public List<EventFullDto> getEvents(@RequestParam(name = "users", required = false) List<Long> users,
                                         @RequestParam(name = "states", required = false) List<State> states,
-                                        @RequestParam(name = "categories", required = false) List<Integer> categories,
+                                        @RequestParam(name = "categories", required = false) List<Long> categories,
                                         @RequestParam(name = "rangeStart", required = false) String rangeStart,
                                         @RequestParam(name = "rangeEnd", required = false) String rangeEnd,
                                         @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,

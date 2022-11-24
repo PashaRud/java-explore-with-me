@@ -1,12 +1,15 @@
 package ru.practicum.exploreWithMe.service.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exploreWithMe.dto.user.NewUserRequest;
 import ru.practicum.exploreWithMe.dto.user.UserDto;
 import ru.practicum.exploreWithMe.exception.AlreadyExistsException;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
+import ru.practicum.exploreWithMe.mapper.categories.CategoryMapper;
 import ru.practicum.exploreWithMe.mapper.user.UserMapper;
 import ru.practicum.exploreWithMe.model.User;
 import ru.practicum.exploreWithMe.repository.user.UserRepository;
@@ -18,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -42,10 +46,13 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Transactional
-    public UserDto create(UserDto dto) {
-        User user = UserMapper.toUser(dto);
-        user = userRepository.save(user);
-        return UserMapper.toUserDto(user);
+    public UserDto create(NewUserRequest newUser) {
+        try {
+            log.info("Create name: " + newUser.toString());
+            return  UserMapper.toUserDto(userRepository.save(UserMapper.NewUserToUser(newUser)));
+        } catch (RuntimeException e) {
+            throw new AlreadyExistsException("Name must be unique.");
+        }
     }
 
 //    @Override

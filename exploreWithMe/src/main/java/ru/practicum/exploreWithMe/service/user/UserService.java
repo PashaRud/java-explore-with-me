@@ -1,5 +1,6 @@
 package ru.practicum.exploreWithMe.service.user;
 
+import ru.practicum.exploreWithMe.dto.user.NewUserRequest;
 import ru.practicum.exploreWithMe.dto.user.UserDto;
 import ru.practicum.exploreWithMe.model.User;
 
@@ -11,7 +12,7 @@ public interface UserService {
 
 //    UserDto getUserById(Long id);
 
-    UserDto create(UserDto userDto);
+    UserDto create(NewUserRequest newUserRequest);
 
 //    UserDto update(UserDto userDto, Long id);
 

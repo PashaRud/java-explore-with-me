@@ -5,7 +5,7 @@ import ru.practicum.exploreWithMe.dto.categories.NewCategoryDto;
 
 public interface CategoryAdminService {
 
-    CategoryDto updateCategory(CategoryDto dto);
+    CategoryDto updateCategory(NewCategoryDto dto);
 
     CategoryDto createCategory(NewCategoryDto dto);
 

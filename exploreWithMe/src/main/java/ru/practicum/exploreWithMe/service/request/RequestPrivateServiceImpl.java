@@ -18,6 +18,7 @@ import ru.practicum.exploreWithMe.repository.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,31 +45,56 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
 
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
-        if (!requestRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Request for participation in the event with id = " + eventId + "" +
-                    " not found"));
-        }
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("User with id = " + userId + " not found"));
-        }
+//        if (!eventRepository.existsById(eventId)) {
+//            throw new NotFoundException(String.format("Request for participation in the event with id = " + eventId + "" +
+//                    " not found"));
+//        }
+//        if (!userRepository.existsById(userId)) {
+//            throw new NotFoundException(String.format("User with id = " + userId + " not found"));
+//        }
 
-        Event event = eventRepository.findById(eventId).get();
+//        Event event = eventRepository.findById(eventId).get();
+//
+//        if (requestRepository.countByEventIdAndStatus(eventId, Status.CONFIRMED) != null) {
+//            long eventConfirmedRequest = requestRepository.countByEventIdAndStatus(eventId, Status.CONFIRMED);
+//            if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == eventConfirmedRequest) {
+//                throw new ValidateException(String.format("Limit of participation on event with id = " + eventId));
+//            }
+//        }
+//        if (requestRepository.findByEventIdAndRequesterId(eventId, userId) != null) {
+//            throw new ValidateException("The request for participation in the event cannot be added again");
+//        }
+//        if (userId == event.getInitiator().getId()) {
+//            throw new ValidateException("The user who created the event cannot apply to participate in it");
+//        }
+//        if (!event.getState().equals(State.PUBLISHED)) {
+//            throw new ValidateException("You can only apply for a published event");
+//        }
+//        Request request = new Request();
+//        request.setRequester(userRepository.findById(userId).orElseThrow(() ->
+//                new ValidateException("Wrong User id")));
+//        request.setEvent(eventRepository.findById(eventId).orElseThrow(() ->
+//                new ValidateException(("Wrong event id"))));
+//        request.setCreated(LocalDateTime.now());
+//        request.setStatus(Status.PENDING);
+//        ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
+//        return dto;
 
-        if (requestRepository.countByEventIdAndStatus(eventId, Status.CONFIRMED) != null) {
-            long eventConfirmedRequest = requestRepository.countByEventIdAndStatus(eventId, Status.CONFIRMED);
-            if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == eventConfirmedRequest) {
-                throw new ValidateException(String.format("Limit of participation on event with id = " + eventId));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() ->
+                        new NotFoundException(String.format("События с id %d не существует", eventId)));
+        if (!event.getRequestModeration()) {
+            if (Objects.equals(event.getInitiator(), userId)) {
+                throw new ValidateException("Организатор не может стать участником события.");
+            }
+            if (!event.getState().equals(State.PUBLISHED)) {
+                throw new ValidateException("Событие еще не опубликовано.");
+            }
+            if ((event.getParticipantLimit() - event.getConfirmedRequests()) <= 0) {
+                throw new ValidateException("Достигнут максимум участников.");
             }
         }
-        if (requestRepository.findByEventIdAndRequesterId(eventId, userId) != null) {
-            throw new ValidateException("The request for participation in the event cannot be added again");
-        }
-        if (userId == event.getInitiator().getId()) {
-            throw new ValidateException("The user who created the event cannot apply to participate in it");
-        }
-        if (!event.getState().equals(State.PUBLISHED)) {
-            throw new ValidateException("You can only apply for a published event");
-        }
+
         Request request = new Request();
         request.setRequester(userRepository.findById(userId).orElseThrow(() ->
                 new ValidateException("Wrong User id")));
@@ -76,8 +102,11 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 new ValidateException(("Wrong event id"))));
         request.setCreated(LocalDateTime.now());
         request.setStatus(Status.PENDING);
-        ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
-        return dto;
+        try {
+            return RequestMapper.toRequestDto(requestRepository.save(request));
+        } catch (RuntimeException e) {
+            throw new ValidateException("Вы уже сделали запрос на участие в данном событии.");
+        }
     }
 
     @Override

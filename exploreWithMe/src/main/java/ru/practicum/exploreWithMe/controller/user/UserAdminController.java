@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.exploreWithMe.dto.user.NewUserRequest;
 import ru.practicum.exploreWithMe.dto.user.UserDto;
 import ru.practicum.exploreWithMe.service.user.UserService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -29,8 +31,8 @@ public class UserAdminController {
     }
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto dto) {
-        return userService.create(dto);
+    public UserDto createUser(@Valid @RequestBody NewUserRequest newUserRequest) {
+        return userService.create(newUserRequest);
     }
 
     @DeleteMapping(value = "/{userId}")

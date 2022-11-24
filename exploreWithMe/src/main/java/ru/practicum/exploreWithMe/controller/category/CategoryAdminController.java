@@ -8,26 +8,27 @@ import ru.practicum.exploreWithMe.dto.categories.CategoryDto;
 import ru.practicum.exploreWithMe.dto.categories.NewCategoryDto;
 import ru.practicum.exploreWithMe.service.category.CategoryAdminService;
 
+import javax.validation.Valid;
+
 @RestController
 @Slf4j
-@Validated
-@RequestMapping(path = "/admin/categories")
+//@RequestMapping(path = "/admin/categories")
 @RequiredArgsConstructor
 public class CategoryAdminController {
 
     private final CategoryAdminService service;
 
-    @PatchMapping
-    public CategoryDto updateCategory(@RequestBody CategoryDto dto) {
+    @PatchMapping("/admin/categories")
+    public CategoryDto updateCategory(@Valid @RequestBody NewCategoryDto dto) {
         return service.updateCategory(dto);
     }
 
-    @PostMapping
-    public CategoryDto postCategory(@RequestBody NewCategoryDto dto) {
+    @PostMapping("/admin/categories")
+    public CategoryDto postCategory(@Valid @RequestBody NewCategoryDto dto) {
         return service.createCategory(dto);
     }
 
-    @DeleteMapping("{catId}")
+    @DeleteMapping("/admin/categories/{catId}")
     public void deleteCategory(@PathVariable Long catId) {
         service.deleteCategory(catId);
     }

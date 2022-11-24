@@ -12,6 +12,7 @@ import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.exception.ValidateException;
 import ru.practicum.exploreWithMe.model.Event;
+import ru.practicum.exploreWithMe.repository.category.CategoryRepository;
 import ru.practicum.exploreWithMe.repository.event.EventRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
@@ -19,6 +20,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -30,13 +32,14 @@ import static ru.practicum.exploreWithMe.mapper.event.EventFullMapper.eventToEve
 public class EventAdminServiceImpl implements EventAdminService {
 
     private final EventRepository repository;
+    private final CategoryRepository categoryRepository;
     private final EntityManager entityManager;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     @Transactional
-    public List<EventFullDto> getEvents(List<Integer> users, List<State> states,
-                                        List<Integer> categories, String rangeStart,
+    public List<EventFullDto> getEvents(List<Long> users, List<State> states,
+                                        List<Long> categories, String rangeStart,
                                         String rangeEnd, int from, int size) {
         LocalDateTime start = null;
         LocalDateTime end = null;
@@ -54,9 +57,32 @@ public class EventAdminServiceImpl implements EventAdminService {
                 throw new ValidateException("Incorrect rangeEnd value = " + rangeEnd);
             }
         }
+
+        start = (rangeStart != null) ? start : LocalDateTime.now();
+        end = (rangeEnd != null) ? end : LocalDateTime.now().plusYears(300);
+
         if (start.isAfter(end)) {
             throw new ValidateException("Ending event before it starts");
         }
+
+
+
+//        LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
+//        LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
+//        start = (rangeStart != null) ? start : LocalDateTime.now();
+//        end = (rangeEnd != null) ? end : LocalDateTime.now().plusYears(300);
+//
+//        if (start.isAfter(end)) {
+//            throw new ValidateException("Дата и время окончаний события не может быть раньше даты начала событий!");
+//        }
+
+        if (states == null) {
+            states = new ArrayList<>();
+            states.add(State.PENDING);
+            states.add(State.CANCELED);
+            states.add(State.PUBLISHED);
+        }
+
         Session session = entityManager.unwrap(Session.class);
         Filter dateFilter = session.enableFilter("dateFilter");
         dateFilter.setParameter("rangeStart", rangeStart);
@@ -101,7 +127,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             event.setAnnotation(updateEventRequest.getAnnotation());
         }
         if (updateEventRequest.getCategoryId() != null) {
-            //Добавить категорию
+            event.setCategory(categoryRepository.findById(updateEventRequest.getCategoryId()).get());
         }
 
         if (updateEventRequest.getDescription() != null) {

@@ -1,6 +1,7 @@
 package ru.practicum.exploreWithMe.mapper.user;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.exploreWithMe.dto.user.NewUserRequest;
 import ru.practicum.exploreWithMe.dto.user.UserDto;
 import ru.practicum.exploreWithMe.dto.user.UserShortDto;
 import ru.practicum.exploreWithMe.model.User;
@@ -17,6 +18,13 @@ public class UserMapper {
                 user.getName());
     }
 
+    public static User NewUserToUser(NewUserRequest request) {
+        return User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .build();
+    }
+
     public static User toUser(UserDto userDto) {
         return new User(userDto.getId(),
                 userDto.getEmail(),
@@ -24,8 +32,10 @@ public class UserMapper {
     }
 
     public static User toUserFromShortDto(UserShortDto userShortDto) {
-        return new User(userShortDto.getId(),
-                userShortDto.getName());
+        return User.builder()
+                .id(userShortDto.getId())
+                .name(userShortDto.getName())
+                .build();
     }
 
     public static UserShortDto toShortUserDto(User user) {

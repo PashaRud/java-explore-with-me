@@ -32,18 +32,18 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE (e.category.id IN :categories) AND " +
             "(e.initiator.id IN :users) AND " +
             "(e.state IN :states)")
-    List<Event> findByUsersAndCategoriesAndStates(List<Integer> users, List<Integer> categories,
+    List<Event> findByUsersAndCategoriesAndStates(List<Long> users, List<Long> categories,
                                                   List<State> states, Pageable pageable);
 
     @Query("SELECT e FROM Event AS e " +
             "WHERE (e.initiator.id IN :users) AND " +
             "(e.state IN :states)")
-    List<Event> findByUsersAndStates(List<Integer> users, List<State> states, Pageable pageable);
+    List<Event> findByUsersAndStates(List<Long> users, List<State> states, Pageable pageable);
 
     @Query("SELECT e FROM Event AS e " +
             "WHERE (e.category.id IN :categories) AND " +
             "(e.state IN :states)")
-    List<Event> findByCategoriesAndStates(List<Integer> categories, List<State> states, Pageable pageable);
+    List<Event> findByCategoriesAndStates(List<Long> categories, List<State> states, Pageable pageable);
 
     @Query("SELECT e FROM Event AS e " +
             "WHERE (e.state IN :states)")

@@ -20,9 +20,4 @@ public class User {
     private String name;
     @Column(name = "email")
     private String email;
-
-    public User(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }

@@ -1,11 +1,21 @@
 package ru.practicum.exploreWithMe.exception;
 
-public class ErrorResponse {
-    private String message;
-    private String error;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    public ErrorResponse(String message, String error) {
-        this.message = message;
+@Getter
+@Setter
+@NoArgsConstructor
+public class ErrorResponse {
+    private String error;
+    private String message;
+    private ErrorState status;
+
+
+    public ErrorResponse(String error, String message, ErrorState status) {
         this.error = error;
+        this.message = message;
+        this.status = status;
     }
 }

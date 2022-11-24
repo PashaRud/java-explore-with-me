@@ -8,6 +8,8 @@ import ru.practicum.exploreWithMe.dto.compilation.CompilationDto;
 import ru.practicum.exploreWithMe.dto.compilation.NewCompilationDto;
 import ru.practicum.exploreWithMe.service.compilation.CompilationAdminService;
 
+import javax.validation.Valid;
+
 @RestController
 @Slf4j
 @Validated
@@ -18,7 +20,7 @@ public class CompilationAdminController {
     private final CompilationAdminService service;
 
     @PostMapping
-    public CompilationDto createCompilation(@RequestBody NewCompilationDto dto) {
+    public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto dto) {
         return service.createCompilation(dto);
     }
 

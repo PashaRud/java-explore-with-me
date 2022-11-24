@@ -1,5 +1,6 @@
 package ru.practicum.exploreWithMe.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ru.practicum.exploreWithMe.dto.categories.CategoryDto;
 import ru.practicum.exploreWithMe.dto.location.Location;
@@ -19,15 +20,12 @@ import java.time.LocalDateTime;
 public class NewEventDto {
     @NotBlank
     private String annotation;
-    @NotBlank
+    @JsonProperty("category")
     private Long category;
+    @NotBlank
     private String description;
-    @NotBlank
     private String eventDate;
-    @NotBlank
-    @NotBlank
     private Location location;
-    @NotBlank
     private boolean paid;
 //    private UserDto initiator;
     private Integer participantLimit;

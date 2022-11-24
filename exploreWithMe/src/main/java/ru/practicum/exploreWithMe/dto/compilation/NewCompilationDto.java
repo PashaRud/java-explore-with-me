@@ -11,9 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class NewCompilationDto {
-    @NotBlank
     private List<Long> events;
-    @NotBlank
     private boolean pinned;
     @NotBlank
     private String title;
