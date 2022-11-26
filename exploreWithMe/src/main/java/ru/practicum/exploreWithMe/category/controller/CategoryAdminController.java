@@ -11,7 +11,6 @@ import javax.validation.Valid;
 
 @RestController
 @Slf4j
-//@RequestMapping(path = "/admin/categories")
 @RequiredArgsConstructor
 public class CategoryAdminController {
 

@@ -36,7 +36,7 @@ public class EventPublicServiceImpl implements EventPublicService{
     @Override
     public List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
                                          LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                         Boolean onlyAvailable, EventSort sort, Integer from, Integer size) {
+                                         Integer from, Integer size) {
         rangeStart = (rangeStart != null) ? rangeStart : LocalDateTime.now();
         rangeEnd = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(300);
 
@@ -45,20 +45,17 @@ public class EventPublicServiceImpl implements EventPublicService{
                     "be earlier than the start date of the event.");
         }
 
-        Session session = entityManager.unwrap(Session.class);
+//        Session session = entityManager.unwrap(Session.class);
 
-        // в выдаче должны быть только опубликованные события
-        session.enableFilter("stateFilter").setParameter("state", State.PUBLISHED.toString());
+//        session.enableFilter("stateFilter").setParameter("state", State.PUBLISHED.toString());
 
-        // включаем фильтр по датам
-        Filter dateFilter = session.enableFilter("dateFilter");
-        dateFilter.setParameter("rangeStart", rangeStart);
-        dateFilter.setParameter("rangeEnd", rangeEnd);
+//        Filter dateFilter = session.enableFilter("dateFilter");
+//        dateFilter.setParameter("rangeStart", rangeStart);
+//        dateFilter.setParameter("rangeEnd", rangeEnd);
 
-        // включаем фильтр по платным/бесплатным событиям, если задано
-        if (paid != null) {
-            session.enableFilter("paidFilter").setParameter("paid", paid);
-        }
+//        if (paid != null) {
+//            session.enableFilter("paidFilter").setParameter("paid", paid);
+//        }
 
         List<Event> events;
 
@@ -69,35 +66,34 @@ public class EventPublicServiceImpl implements EventPublicService{
         }
 
 
-        // выключаем фильтры
-        if (paid != null) session.disableFilter("paidFilter");
-
-        session.disableFilter("dateFilter");
-        session.disableFilter("stateFilter");
+//        if (paid != null) session.disableFilter("paidFilter");
+//
+//        session.disableFilter("dateFilter");
+//        session.disableFilter("stateFilter");
 
         List<EventShortDto> eventShortDtos = events.stream()
                 .map(dtos -> EventFullMapper.eventToEventShortDto(dtos))
                 .collect(toList());
 
-        if (onlyAvailable) {
-            eventShortDtos = eventShortDtos.stream()
-                    .filter(x -> x.getConfirmedRequests() < x.getParticipantLimit())
-                    .collect(toList());
-        }
+//        if (onlyAvailable) {
+//            eventShortDtos = eventShortDtos.stream()
+//                    .filter(x -> x.getConfirmedRequests() < x.getParticipantLimit())
+//                    .collect(toList());
+//        }
 
-        if (EventSort.VIEWS.equals(sort)) {
-            eventShortDtos = eventShortDtos.stream()
-                    .sorted(Comparator.comparingLong(EventShortDto::getViews))
-                    .skip(from)
-                    .limit(size)
-                    .collect(toList());
-        } else {
+//        if (EventSort.VIEWS.equals(sort)) {
+//            eventShortDtos = eventShortDtos.stream()
+//                    .sorted(Comparator.comparingLong(EventShortDto::getViews))
+//                    .skip(from)
+//                    .limit(size)
+//                    .collect(toList());
+//        } else {
             eventShortDtos = eventShortDtos.stream()
                     .sorted(Comparator.comparing(EventShortDto::getEventDate))
                     .skip(from)
                     .limit(size)
                     .collect(toList());
-        }
+//        }
 
         return eventShortDtos;
 }

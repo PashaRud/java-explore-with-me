@@ -45,7 +45,20 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     @Override
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
 
-        validateRequestSave(userId, eventId);
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() ->
+                        new NotFoundException("Event with id " + eventId + " does't exist" ));
+        if (!event.getRequestModeration()) {
+            if (Objects.equals(event.getInitiator(), userId)) {
+                throw new ValidateException("The organizer cannot become a participant in the event");
+            }
+            if (!event.getState().equals(State.PUBLISHED)) {
+                throw new ValidateException("The event has not yet been published");
+            }
+            if ((event.getParticipantLimit() - event.getConfirmedRequests()) <= 0) {
+                throw new ValidateException("The maximum number of participants has been reached");
+            }
+        }
         ParticipationRequestDto requestDto = ParticipationRequestDto.builder()
                 .requester(userId)
                 .event(eventId)
@@ -55,24 +68,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
         try {
             return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(requestDto)));
         } catch (RuntimeException e) {
-            throw new ValidateException("Вы уже сделали запрос на участие в данном событии.");
-        }
-    }
-
-    private void validateRequestSave(Long userId, Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() ->
-                        new NotFoundException(String.format("События с id %d не существует", eventId)));
-        if (!event.getRequestModeration()) {
-            if (Objects.equals(event.getInitiator(), userId)) {
-                throw new ValidateException("Организатор не может стать участником события.");
-            }
-            if (!event.getState().equals(State.PUBLISHED)) {
-                throw new ValidateException("Событие еще не опубликовано.");
-            }
-            if ((event.getParticipantLimit() - event.getConfirmedRequests()) <= 0) {
-                throw new ValidateException("Достигнут максимум участников.");
-            }
+            throw new ValidateException("You have already made a request to participate in this event");
         }
     }
 

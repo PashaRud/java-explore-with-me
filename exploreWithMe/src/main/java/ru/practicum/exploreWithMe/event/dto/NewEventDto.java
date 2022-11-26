@@ -23,7 +23,6 @@ public class NewEventDto {
     private String eventDate;
     private Location location;
     private boolean paid;
-//    private UserDto initiator;
     private Integer participantLimit;
     private Boolean requestModeration;
     @NotBlank

@@ -62,7 +62,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + updateEventRequest.getEventId() +
                         " not found."));
 
-//        if (!userId.equals(userRepository.findByEventId(updateEventRequest.getEventId()))) {
         if (!userId.equals(userRepository.findById(updateEventRequest.getEventId()).get())) {
             throw new ForbiddenException("This user is not the initiator");
         }
@@ -115,7 +114,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 dto.getAnnotation(),
                 dto.getDescription(),
                 categoryRepository.findById(dto.getCategory()).get(),
-                //примерно так
                 dto.getTitle(),
                 now,
                 now,
@@ -185,8 +183,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if(eventFullDto.getConfirmedRequests() == eventFullDto.getParticipantLimit()) {
             throw new ForbiddenException("Participant limit reached");
         }
-
-        //Примерный метод
         Request request = requestRepository.findById(reqId).get();
         request.setStatus(State.PUBLISHED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
@@ -205,9 +201,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (!eventFullDto.getState().equals(State.PUBLISHED)) {
             throw new ForbiddenException("Cannot confirm a request to participate in an unpublished event");
         }
-
-
-        //Примерный метод
         Request request = requestRepository.findById(reqId).get();
         request.setStatus(State.REJECTED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
@@ -217,13 +210,13 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     private void userValidation(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new NotFoundException(String.format("User with id = '%s' not found", id));
+            throw new NotFoundException(String.format("User with id = " + id +" not found"));
         }
     }
 
     private void eventValidation(Long id) {
         if (!repository.existsById(id)) {
-            throw new NotFoundException(String.format("Event with id = '%s' not found", id));
+            throw new NotFoundException(String.format("Event with id = " + id + " not found"));
         }
     }
 

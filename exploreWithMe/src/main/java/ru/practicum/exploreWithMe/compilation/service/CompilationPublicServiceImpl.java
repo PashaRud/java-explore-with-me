@@ -2,14 +2,18 @@ package ru.practicum.exploreWithMe.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.compilation.dto.CompilationDto;
+import ru.practicum.exploreWithMe.compilation.model.Compilation;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper;
 import ru.practicum.exploreWithMe.compilation.repository.CompilationRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,16 +29,14 @@ public class CompilationPublicServiceImpl implements CompilationPublicService{
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
         Pageable pageable = FromSizeRequest.of(from, size);
-        if (pinned == null) {
-            return repository.findAll(pageable).stream()
-                    .map(compilation -> mapper.compilationToCompilationDto(compilation))
-                    .collect(Collectors.toList());
+        List<Compilation> compilations = repository.findByPinned(pinned, pageable).toList();
+        List<CompilationDto> compilationDtos = new ArrayList<>();
+        CompilationDto compilationDto;
+        for (Compilation compilation : compilations) {
+            compilationDto = mapper.compilationToCompilationDto(compilation);
+            compilationDtos.add(compilationDto);
         }
-        List<CompilationDto> dtos = repository.findByPinned(pinned, pageable).stream()
-                .map(compilation -> mapper.compilationToCompilationDto(compilation))
-                .collect(Collectors.toList());
-        log.info("List of compilation");
-        return dtos;
+        return compilationDtos;
     }
 
     @Override

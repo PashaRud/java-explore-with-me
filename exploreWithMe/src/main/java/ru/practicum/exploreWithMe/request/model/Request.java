@@ -38,7 +38,7 @@ public class Request {
     @Column(name = "event_id", nullable = false)
     private Long eventId;
 
-    @Column(name = "requester", nullable = false)
+    @Column(name = "requester_id", nullable = false)
     private Long requester;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -46,17 +46,4 @@ public class Request {
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Request request = (Request) o;
-        return id.equals(request.id) && eventId.equals(request.eventId) && requester.equals(request.requester) && status.equals(request.status);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, eventId, requester, status);
-    }
 }

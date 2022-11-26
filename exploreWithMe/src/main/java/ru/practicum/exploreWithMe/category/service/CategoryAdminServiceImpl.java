@@ -26,18 +26,6 @@ public class CategoryAdminServiceImpl implements CategoryAdminService{
         } catch (RuntimeException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }
-//        category = repository.save(category);
-
-//        if (dto.getId() == null || !repository.existsById(dto.getId())) {
-//            throw new ValidateException("Категория не найдена");
-//        }
-//        Category category = repository.findById(dto.getId()).get();
-//        if (dto.getName() != null) {
-//            category.setName(dto.getName());
-//        }
-//        category = repository.save(category);
-//
-//        return CategoryMapper.toCategoryDto(category);
     }
 
     @Override

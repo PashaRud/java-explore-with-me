@@ -2,9 +2,11 @@ package ru.practicum.exploreWithMe.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.compilation.dto.CompilationDto;
 import ru.practicum.exploreWithMe.compilation.dto.NewCompilationDto;
+import ru.practicum.exploreWithMe.exception.AlreadyExistsException;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper;
 import ru.practicum.exploreWithMe.compilation.model.Compilation;
@@ -12,6 +14,7 @@ import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.compilation.repository.CompilationRepository;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -25,14 +28,11 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto dto) {
-        for (Long id :
-                dto.getEvents()) {
-            eventValidation(id);
-        }
-        CompilationDto compilationDto = compilationMapper.compilationToCompilationDto
-                (compilationRepository.save(compilationMapper.newCompilationDtoToCompilation(dto)));
-        log.info("Категория с id={} создана", compilationDto.getId());
-        return compilationDto;
+
+        Set<Event> events = new HashSet<>(eventRepository.findAllById(dto.getEvents()));
+        Compilation compilation = compilationRepository.save(compilationMapper.toCompilationFromNew(dto, events));
+        compilation.setEvents(events);
+        return compilationMapper.compilationToCompilationDto(compilation);
     }
 
     @Override
@@ -90,13 +90,13 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     private void eventValidation(Long id) {
         if (!eventRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Event with id = " + id + " not found"));
+            throw new NotFoundException("Event with id = " + id + " not found");
         }
     }
 
     private void compilationValidation(Long id) {
         if (!compilationRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Compilation with id = " + id + " not found"));
+            throw new NotFoundException("Compilation with id = " + id + " not found");
         }
     }
 }

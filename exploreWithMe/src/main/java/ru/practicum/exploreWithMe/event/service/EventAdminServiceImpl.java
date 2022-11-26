@@ -82,10 +82,10 @@ public class EventAdminServiceImpl implements EventAdminService {
             states.add(State.PUBLISHED);
         }
 
-        Session session = entityManager.unwrap(Session.class);
-        Filter dateFilter = session.enableFilter("dateFilter");
-        dateFilter.setParameter("rangeStart", rangeStart);
-        dateFilter.setParameter("rangeEnd", rangeEnd);
+//        Session session = entityManager.unwrap(Session.class);
+//        Filter dateFilter = session.enableFilter("dateFilter");
+//        dateFilter.setParameter("rangeStart", rangeStart);
+//        dateFilter.setParameter("rangeEnd", rangeEnd);
 
         List<Event> events = new ArrayList<>();
 
@@ -107,7 +107,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             events = eventRepository.findByUsersAndStates(users, states, pageable);
         }
 
-        session.disableFilter("dateFilter");
+//        session.disableFilter("dateFilter");
 
         List<EventFullDto> eventFullDtos = events.stream()
                 .map(event -> eventToEventFullDto(event))

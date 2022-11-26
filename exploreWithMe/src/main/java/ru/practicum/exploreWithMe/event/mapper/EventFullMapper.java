@@ -73,12 +73,4 @@ public class EventFullMapper {
                 .title(event.getTitle())
                 .build();
     }
-
-//    public static List<EventShortDto> toEventDtoList(Set<Event> events) {
-//        List<EventShortDto> result = new ArrayList<>();
-//        for (Event event : events) {
-//            result.add(eventToEventShortDto(event));
-//        }
-//        return result;
-//    }
 }

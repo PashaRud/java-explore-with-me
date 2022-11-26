@@ -32,7 +32,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(ValidateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleItemException(final ValidateException e) {
+    public ErrorResponse handleValidateException(final ValidateException e) {
         log.error("Validate Exception - " + e.getMessage());
         return new ErrorResponse(e.getMessage(), "BAD_REQUEST",
                 ErrorState.BAD_REQUEST);

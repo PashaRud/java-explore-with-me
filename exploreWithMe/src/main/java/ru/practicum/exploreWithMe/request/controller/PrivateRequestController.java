@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.exploreWithMe.exception.ValidateException;
 import ru.practicum.exploreWithMe.request.dto.ParticipationRequestDto;
 import ru.practicum.exploreWithMe.request.service.RequestPrivateService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @Slf4j
-@Validated
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class PrivateRequestController {
@@ -24,9 +25,12 @@ public class PrivateRequestController {
     }
 
     @PostMapping("/{userId}/requests")
-    public ParticipationRequestDto createRequest(@PathVariable Long userId,
+    public ParticipationRequestDto saveRequest(@PathVariable Long userId,
                                   @RequestParam(name = "eventId", required = false) Long eventId) {
-        return service.createRequest(userId, eventId);
+        log.info("Creating request userId={}, eventId={}", userId, eventId);
+        if (eventId == null) {
+            throw new ValidateException("бла бла бла");
+        }        return service.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{userId}/requests/{requestId}/cancel")

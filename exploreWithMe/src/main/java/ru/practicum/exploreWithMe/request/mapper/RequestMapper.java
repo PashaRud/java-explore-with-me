@@ -6,19 +6,6 @@ import ru.practicum.exploreWithMe.request.model.Request;
 
 @Component
 public class RequestMapper {
-
-
-//    public static ParticipationRequestDto toRequestDto(Request request) {
-//        return ParticipationRequestDto.builder()
-//                .id(request.getId())
-//                .created(request.getCreated().toString())
-//                .eventId(request.getEvent().getId())
-//                .requester(request.getRequester().getId())
-//                .status(request.getStatus())
-//                .build();
-//    }
-
-
     public static Request toRequest(ParticipationRequestDto requestDto) {
         return Request.builder()
                 .id(requestDto.getId())

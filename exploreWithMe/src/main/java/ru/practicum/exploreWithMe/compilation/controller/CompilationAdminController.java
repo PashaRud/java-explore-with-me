@@ -12,7 +12,6 @@ import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@Validated
 @RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 public class CompilationAdminController {

@@ -19,7 +19,6 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Validated
 @RequestMapping(path = "/events")
 @RequiredArgsConstructor
 public class EventPublicController {
@@ -29,29 +28,26 @@ public class EventPublicController {
 
 
     @GetMapping
-    public List<EventShortDto> getEvents(@RequestParam(required = false, defaultValue = "") String text,
-                                         @RequestParam(required = false) List<Long> categories,
-                                         @RequestParam(required = false) Boolean paid,
-                                         @RequestParam(required = false) String rangeStart,
-                                         @RequestParam(required = false) String rangeEnd,
-                                         @RequestParam(required = false) Boolean onlyAvailable,
-                                         @RequestParam(required = false) EventSort sort,
-                                         @Valid @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                         @Valid @Positive @RequestParam(defaultValue = "10") Integer size,
-                                         HttpServletRequest request) {
-        log.info("{}: Запрос к эндпоинту '{}' на получение списка событий",
-                request.getRemoteAddr(), request.getRequestURI());
-//        statsService.setHits(request.getRequestURI(), request.getRemoteAddr());
+    public List<EventShortDto> getEvents(@RequestParam(name = "text", required = false) String text,
+                                         @RequestParam(name = "categories", required = false) List<Long> categories,
+                                         @RequestParam(name = "paid", required = false) Boolean paid,
+                                         @RequestParam(name = "rangeStart",
+                                                 defaultValue = "1950-01-01 13:30:38") String rangeStart,
+                                         @RequestParam(name = "rangeEnd",
+                                                 defaultValue = "2090-01-01 00:00:00") String rangeEnd,
+//                                         @RequestParam(required = false) Boolean onlyAvailable,
+//                                         @RequestParam(required = false) EventSort sort,
+                                         @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                         @Positive @RequestParam(defaultValue = "10") Integer size) {
         return eventService.getEvents(text, categories, paid,
                 LocalDateTime.parse(rangeStart, formatter),
                 LocalDateTime.parse(rangeEnd, formatter),
-                onlyAvailable, sort, from, size);
+                from, size);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getEventById(@PathVariable Long eventId) {
         EventFullDto eventFullDto = eventService.getEventById(eventId);
-//        statsService.setHits(request.getRequestURI(), request.getRemoteAddr());
         return eventFullDto;
     }
 }
