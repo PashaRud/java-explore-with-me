@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.category.dto.CategoryDto;
-import ru.practicum.exploreWithMe.exception.ValidateException;
+import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.category.mapper.CategoryMapper;
 import ru.practicum.exploreWithMe.category.model.Category;
 import ru.practicum.exploreWithMe.category.repository.CategoryRepository;
@@ -33,6 +33,6 @@ public class CategoryPublicServiceImpl implements CategoryPublicService {
     @Override
     public CategoryDto getCategoryById(Long catId) {
         Category category = repository.findById(catId)
-                .orElseThrow(() -> new ValidateException("Category id = " + catId + "not found"));
+                .orElseThrow(() -> new NotFoundException("Category id = " + catId + "not found"));
         return CategoryMapper.toCategoryDto(category);    }
 }

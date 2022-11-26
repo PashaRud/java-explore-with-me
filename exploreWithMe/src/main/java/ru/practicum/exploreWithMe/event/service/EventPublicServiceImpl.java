@@ -2,12 +2,9 @@ package ru.practicum.exploreWithMe.event.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Filter;
-import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
-import ru.practicum.exploreWithMe.enums.EventSort;
 import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.exception.ForbiddenException;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
@@ -16,9 +13,7 @@ import ru.practicum.exploreWithMe.event.mapper.EventFullMapper;
 import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,8 +25,6 @@ import static java.util.stream.Collectors.toList;
 public class EventPublicServiceImpl implements EventPublicService{
 
     private final EventRepository repository;
-    private final EntityManager entityManager;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
@@ -45,18 +38,6 @@ public class EventPublicServiceImpl implements EventPublicService{
                     "be earlier than the start date of the event.");
         }
 
-//        Session session = entityManager.unwrap(Session.class);
-
-//        session.enableFilter("stateFilter").setParameter("state", State.PUBLISHED.toString());
-
-//        Filter dateFilter = session.enableFilter("dateFilter");
-//        dateFilter.setParameter("rangeStart", rangeStart);
-//        dateFilter.setParameter("rangeEnd", rangeEnd);
-
-//        if (paid != null) {
-//            session.enableFilter("paidFilter").setParameter("paid", paid);
-//        }
-
         List<Event> events;
 
         if (categories != null) {
@@ -65,36 +46,14 @@ public class EventPublicServiceImpl implements EventPublicService{
             events = repository.findByText(text);
         }
 
-
-//        if (paid != null) session.disableFilter("paidFilter");
-//
-//        session.disableFilter("dateFilter");
-//        session.disableFilter("stateFilter");
-
         List<EventShortDto> eventShortDtos = events.stream()
                 .map(dtos -> EventFullMapper.eventToEventShortDto(dtos))
                 .collect(toList());
-
-//        if (onlyAvailable) {
-//            eventShortDtos = eventShortDtos.stream()
-//                    .filter(x -> x.getConfirmedRequests() < x.getParticipantLimit())
-//                    .collect(toList());
-//        }
-
-//        if (EventSort.VIEWS.equals(sort)) {
-//            eventShortDtos = eventShortDtos.stream()
-//                    .sorted(Comparator.comparingLong(EventShortDto::getViews))
-//                    .skip(from)
-//                    .limit(size)
-//                    .collect(toList());
-//        } else {
             eventShortDtos = eventShortDtos.stream()
                     .sorted(Comparator.comparing(EventShortDto::getEventDate))
                     .skip(from)
                     .limit(size)
                     .collect(toList());
-//        }
-
         return eventShortDtos;
 }
 
@@ -112,7 +71,7 @@ public class EventPublicServiceImpl implements EventPublicService{
 
     private void eventValidation(Long id) {
         if (repository.findById(id).isEmpty()) {
-            throw new NotFoundException(String.format("Events with id = " + id + " не найдено"));
+            throw new NotFoundException("Events with id = " + id + " не найдено");
         }
     }
 }

@@ -2,13 +2,10 @@ package ru.practicum.exploreWithMe.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.compilation.dto.CompilationDto;
 import ru.practicum.exploreWithMe.compilation.dto.NewCompilationDto;
-import ru.practicum.exploreWithMe.exception.AlreadyExistsException;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
-import ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper;
 import ru.practicum.exploreWithMe.compilation.model.Compilation;
 import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.compilation.repository.CompilationRepository;
@@ -17,6 +14,9 @@ import ru.practicum.exploreWithMe.event.repository.EventRepository;
 import java.util.HashSet;
 import java.util.Set;
 
+import static ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper.compilationToCompilationDto;
+import static ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper.toCompilationFromNew;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -24,15 +24,14 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     private final EventRepository eventRepository;
     private final CompilationRepository compilationRepository;
-    private final CompilationMapper compilationMapper;
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto dto) {
 
         Set<Event> events = new HashSet<>(eventRepository.findAllById(dto.getEvents()));
-        Compilation compilation = compilationRepository.save(compilationMapper.toCompilationFromNew(dto, events));
+        Compilation compilation = compilationRepository.save(toCompilationFromNew(dto, events));
         compilation.setEvents(events);
-        return compilationMapper.compilationToCompilationDto(compilation);
+        return compilationToCompilationDto(compilation);
     }
 
     @Override

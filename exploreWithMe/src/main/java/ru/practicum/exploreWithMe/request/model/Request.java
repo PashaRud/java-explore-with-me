@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.request.model;
 
 import lombok.*;
 import ru.practicum.exploreWithMe.enums.State;
+import ru.practicum.exploreWithMe.enums.Status;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -42,7 +43,7 @@ public class Request {
     private Long requester;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private State status;
+    private Status status;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;

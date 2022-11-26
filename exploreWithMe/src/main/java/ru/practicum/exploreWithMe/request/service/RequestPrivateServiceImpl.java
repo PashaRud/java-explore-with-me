@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exploreWithMe.enums.Status;
 import ru.practicum.exploreWithMe.request.dto.ParticipationRequestDto;
 import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
@@ -32,7 +33,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     @Override
     public List<ParticipationRequestDto> getRequestsByUserId(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("User with id = " + userId + " not found"));
+            throw new NotFoundException("User with id = " + userId + " not found");
         }
         List<ParticipationRequestDto> dto = requestRepository.findByRequester(userId).stream()
                 .map(RequestMapper::toRequestDto)
@@ -62,7 +63,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
         ParticipationRequestDto requestDto = ParticipationRequestDto.builder()
                 .requester(userId)
                 .event(eventId)
-                .status(State.PENDING)
+                .status(Status.PENDING)
                 .created(LocalDateTime.now())
                 .build();
         try {
@@ -74,32 +75,14 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
 
     @Override
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
-//        if (!requestRepository.existsById(userId)) {
-//            throw new NotFoundException(String.format("Request for participation in the event with id = " + requestId +
-//                    " not found"));
-//        }
-//        Request request = requestRepository.findById(requestId).get();
-//
-//        if (userId != request.getRequester().getId()) {
-//            throw new ValidateException("Only the user who created the request can cancel it");
-//        }
-//        request.setStatus(Status.CANCELED);
-//        ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
-//        log.info("Request for participation in the event with id = " + requestId +
-//                " was canceled by the user with id = " + userId);
-//        return dto;
-//    }
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Request for participation in the event with id = " + requestId +
+                        " not found"));
 
-                if (!requestRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Request for participation in the event with id = " + requestId +
-                    " not found"));
-        }
-        Request request = requestRepository.findById(requestId).get();
-
-        if (userId != request.getRequester()) {
+        if (!userId.equals(request.getRequester())) {
             throw new ValidateException("Only the user who created the request can cancel it");
         }
-        request.setStatus(State.CANCELED);
+        request.setStatus(Status.CANCELED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
         log.info("Request for participation in the event with id = " + requestId +
                 " was canceled by the user with id = " + userId);

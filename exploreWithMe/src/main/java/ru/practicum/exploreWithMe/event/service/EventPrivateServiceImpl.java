@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exploreWithMe.enums.Status;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.event.dto.NewEventDto;
@@ -36,7 +37,7 @@ import static ru.practicum.exploreWithMe.event.mapper.EventFullMapper.eventToEve
 @RequiredArgsConstructor
 public class EventPrivateServiceImpl implements EventPrivateService {
 
-    private final EventRepository repository;
+    private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
@@ -49,7 +50,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         userValidation(userId);
         Pageable pageable = FromSizeRequest.of(from, size);
 
-        List<EventShortDto> eventShortDtos = repository.findByInitiatorId(userId, pageable).stream()
+        List<EventShortDto> eventShortDtos = eventRepository.findByInitiatorId(userId, pageable).stream()
                 .map(event ->eventToEventShortDto(event))
                 .collect(toList());
         return eventShortDtos;
@@ -58,11 +59,11 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Override
     public EventFullDto updateEvent(Long userId, UpdateEventRequest updateEventRequest) {
         userValidation(userId);
-        Event event = repository.findById(updateEventRequest.getEventId())
+        Event event = eventRepository.findById(updateEventRequest.getEventId())
                 .orElseThrow(() -> new NotFoundException("Event with id=" + updateEventRequest.getEventId() +
                         " not found."));
-
-        if (!userId.equals(userRepository.findById(updateEventRequest.getEventId()).get())) {
+        Long EventIniciatorId = event.getInitiator().getId();
+        if (!userId.equals(EventIniciatorId)) {
             throw new ForbiddenException("This user is not the initiator");
         }
         if (updateEventRequest.getAnnotation() != null) {
@@ -97,7 +98,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (event.getState().equals(State.CANCELED)) {
             event.setState(State.PENDING);
         }
-        EventFullDto dto = EventFullMapper.eventToEventFullDto(repository.save(event));
+        EventFullDto dto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
 
         return dto;
     }
@@ -126,7 +127,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 dto.getParticipantLimit(),
                 dto.getRequestModeration(),
                 State.PENDING);
-        repository.save(event);
+        eventRepository.save(event);
         EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event);
         return eventFullDto;
     }
@@ -135,9 +136,10 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public EventFullDto getEvent(Long userId, Long eventId) {
         eventValidation(eventId);
         userValidation(userId);
-        Event event = repository.findById(eventId).get();
-        initiatorValidation(userId, event.getInitiator().getId());
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.save(event));
+        Event event = eventRepository.findById(eventId).get();
+        Long iniciatorId = event.getInitiator().getId();
+        initiatorValidation(userId, iniciatorId);
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
 
         return eventFullDto;
     }
@@ -146,13 +148,13 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public EventFullDto cancelEvent(Long userId, Long eventId) {
         eventValidation(eventId);
         userValidation(userId);
-        Event event = repository.findById(eventId).get();
+        Event event = eventRepository.findById(eventId).get();
         initiatorValidation(userId, event.getInitiator().getId());
         if (!event.getState().equals(State.PENDING)) {
             throw new ValidateException("Only PENDING state events can be cancelled");
         }
         event.setState(State.CANCELED);
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.save(event));
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
         return eventFullDto;
     }
 
@@ -160,7 +162,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public List<ParticipationRequestDto> getRequests(Long userId, Long eventId) {
         eventValidation(eventId);
         userValidation(userId);
-        Event event = repository.findById(eventId).get();
+        Event event = eventRepository.findById(eventId).get();
         initiatorValidation(userId, event.getInitiator().getId());
 
         List<ParticipationRequestDto> dtos = requestRepository.findByEventId(eventId).stream()
@@ -173,7 +175,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public ParticipationRequestDto confirmRequest(Long userId, Long eventId, Long reqId) {
         eventValidation(eventId);
         userValidation(userId);
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.findById(eventId).get());
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.findById(eventId).get());
         if (!eventFullDto.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Can only be confirmed by the initiator");
         }
@@ -184,7 +186,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             throw new ForbiddenException("Participant limit reached");
         }
         Request request = requestRepository.findById(reqId).get();
-        request.setStatus(State.PUBLISHED);
+        request.setStatus(Status.CONFIRMED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
         return dto;
     }
@@ -194,7 +196,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         eventValidation(eventId);
         userValidation(userId);
 
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(repository.findById(eventId).get());
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.findById(eventId).get());
         if (!eventFullDto.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Can only be confirmed by the initiator");
         }
@@ -202,7 +204,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             throw new ForbiddenException("Cannot confirm a request to participate in an unpublished event");
         }
         Request request = requestRepository.findById(reqId).get();
-        request.setStatus(State.REJECTED);
+        request.setStatus(Status.REJECTED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
 
         return dto;
@@ -210,18 +212,18 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     private void userValidation(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new NotFoundException(String.format("User with id = " + id +" not found"));
+            throw new NotFoundException("User with id = " + id +" not found");
         }
     }
 
     private void eventValidation(Long id) {
-        if (!repository.existsById(id)) {
-            throw new NotFoundException(String.format("Event with id = " + id + " not found"));
+        if (!eventRepository.existsById(id)) {
+            throw new NotFoundException("Event with id = " + id + " not found");
         }
     }
 
     private void initiatorValidation(Long userId, Long initiatorId) {
-        if (userId != initiatorId) {
+        if (!userId.equals(initiatorId)) {
             throw new ValidateException("Only the creator of the event can perform this action on it.");
         }
     }

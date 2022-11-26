@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.category.dto.CategoryDto;
 import ru.practicum.exploreWithMe.category.dto.NewCategoryDto;
 import ru.practicum.exploreWithMe.exception.AlreadyExistsException;
-import ru.practicum.exploreWithMe.category.mapper.CategoryMapper;
 import ru.practicum.exploreWithMe.category.repository.CategoryRepository;
+
+import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.NewCategoryDtoToCategory;
+import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.toCategoryDto;
 
 @Service
 @Slf4j
@@ -22,7 +24,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService{
     public CategoryDto updateCategory(NewCategoryDto dto) {
         try {
             log.info("Upd category: " + dto.toString());
-            return  CategoryMapper.toCategoryDto(repository.save(CategoryMapper.NewCategoryDtoToCategory(dto)));
+            return  toCategoryDto(repository.save(NewCategoryDtoToCategory(dto)));
         } catch (RuntimeException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }
@@ -32,7 +34,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService{
     public CategoryDto createCategory(NewCategoryDto dto) {
         try {
             log.info("Create category: " + dto.toString());
-            return  CategoryMapper.toCategoryDto(repository.save(CategoryMapper.NewCategoryDtoToCategory(dto)));
+            return  toCategoryDto(repository.save(NewCategoryDtoToCategory(dto)));
         } catch (RuntimeException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }

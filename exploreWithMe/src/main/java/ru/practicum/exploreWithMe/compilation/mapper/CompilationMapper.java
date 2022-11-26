@@ -18,26 +18,6 @@ import java.util.stream.Collectors;
 @Component
 public class CompilationMapper {
 
-    private EventPublicService eventService;
-
-    public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto) {
-
-        Set<EventFullDto> eventFullDtos = newCompilationDto.getEvents().stream()
-                .filter(Objects::nonNull)
-                .map(eventService::getEventById)
-                .collect(Collectors.toSet());
-
-        Compilation compilation = Compilation.builder()
-            .id(null)
-            .title(newCompilationDto.getTitle())
-            .pinned(newCompilationDto.getPinned())
-            .events(eventFullDtos.stream()
-                    .map(eventDto -> EventFullMapper.toEvent(eventDto))
-                    .collect(Collectors.toSet()))
-            .build();
-        return compilation;
-}
-
     public static Compilation toCompilationFromNew(NewCompilationDto newCompilationDto, Set<Event> events) {
         return Compilation.builder()
                 .id(newCompilationDto.getId())
@@ -47,7 +27,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public CompilationDto compilationToCompilationDto(Compilation compilation) {
+    public static CompilationDto compilationToCompilationDto(Compilation compilation) {
         CompilationDto compilationDto = CompilationDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())

@@ -1,9 +1,10 @@
 package ru.practicum.exploreWithMe.enums;
 
 public enum Status {
-    PENDING,
+    PUBLISHED,
     CONFIRMED,
     REJECTED,
     CANCELED,
-    UNSUPPORTED_STATUS
+    PENDING,
+    UNSUPPORTED_STATUS,
 }

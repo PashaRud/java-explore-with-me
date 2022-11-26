@@ -33,15 +33,6 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserDtoList(users);
     }
 
-//    @Override
-//    public UserDto getUserById(Long id) {
-//        Optional<User> user = userRepository.findById(id);
-//        if(!user.isPresent()) {
-//            return null;
-//        }
-//        return UserMapper.toUserDto(user.get());
-//    }
-
     @Transactional
     public UserDto create(NewUserRequest newUser) {
         try {
@@ -51,29 +42,6 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyExistsException("Name must be unique.");
         }
     }
-
-//    @Override
-//    @Transactional
-//    public UserDto update(UserDto userDto, Long id) {
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("User with id = " + id + " was not found."));
-//        if (userDto.getName() != null) {
-//            user.setName(userDto.getName());
-//        }
-//        if ((userDto.getEmail() != null) && (userDto.getEmail() != user.getEmail())) {
-//            if (userRepository.findByEmail(userDto.getEmail())
-//                    .stream()
-//                    .filter(u -> u.getEmail().equals(userDto.getEmail()))
-//                    .allMatch(u -> u.getId().equals(userDto.getId()))) {
-//                user.setEmail(userDto.getEmail());
-//            } else {
-//                throw new AlreadyExistsException("User with email = " + userDto.getEmail() + " already exist!");
-//            }
-//
-//        }
-//
-//        return UserMapper.toUserDto(userRepository.save(user));
-//    }
 
     @Transactional
     public void delete(Long userId) {

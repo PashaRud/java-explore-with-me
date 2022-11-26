@@ -1,8 +1,6 @@
 package ru.practicum.exploreWithMe.event.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Filter;
-import org.hibernate.Session;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +14,6 @@ import ru.practicum.exploreWithMe.category.repository.CategoryRepository;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,7 +29,6 @@ public class EventAdminServiceImpl implements EventAdminService {
 
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
-    private final EntityManager entityManager;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
@@ -64,31 +60,14 @@ public class EventAdminServiceImpl implements EventAdminService {
             throw new ValidateException("Ending event before it starts");
         }
 
-
-
-//        LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
-//        LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
-//        start = (rangeStart != null) ? start : LocalDateTime.now();
-//        end = (rangeEnd != null) ? end : LocalDateTime.now().plusYears(300);
-//
-//        if (start.isAfter(end)) {
-//            throw new ValidateException("Дата и время окончаний события не может быть раньше даты начала событий!");
-//        }
-
         if (states == null) {
             states = new ArrayList<>();
             states.add(State.PENDING);
             states.add(State.CANCELED);
             states.add(State.PUBLISHED);
-        }
-
-//        Session session = entityManager.unwrap(Session.class);
-//        Filter dateFilter = session.enableFilter("dateFilter");
-//        dateFilter.setParameter("rangeStart", rangeStart);
-//        dateFilter.setParameter("rangeEnd", rangeEnd);
+        };
 
         List<Event> events = new ArrayList<>();
-
         Pageable pageable = FromSizeRequest.of(from, size);
 
         if ((categories != null) && (users != null)) {
@@ -106,8 +85,6 @@ public class EventAdminServiceImpl implements EventAdminService {
         if ((categories == null) && (users != null)) {
             events = eventRepository.findByUsersAndStates(users, states, pageable);
         }
-
-//        session.disableFilter("dateFilter");
 
         List<EventFullDto> eventFullDtos = events.stream()
                 .map(event -> eventToEventFullDto(event))
