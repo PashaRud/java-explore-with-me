@@ -15,19 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Hit {
+public class Hits {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @NotBlank
     @Column(name = "uri")
     String uri;
-    @NotBlank
     @Column(name = "app")
     String app;
-    @NotBlank
     @Column(name = "ip")
     String ip;
     @Column(name = "timestamp")

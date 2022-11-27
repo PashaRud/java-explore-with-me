@@ -10,14 +10,10 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EndPointHit {
+public class EndpointHit {
     private Long id;
-    @NotBlank
     private String uri;
-    @NotBlank
     private String app;
-    @NotBlank
     private String ip;
-    private LocalDateTime timestamp;
-    private Long hits;
+    private String timestamp;
 }

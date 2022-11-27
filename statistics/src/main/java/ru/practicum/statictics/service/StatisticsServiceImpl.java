@@ -3,68 +3,48 @@ package ru.practicum.statictics.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.statictics.dto.EndPointHit;
+import ru.practicum.statictics.dto.EndpointHit;
 import ru.practicum.statictics.dto.ViewStats;
-import ru.practicum.statictics.exception.ValidateException;
-import ru.practicum.statictics.mapper.EndPointHitMapper;
+import ru.practicum.statictics.mapper.EndpointHitMapper;
+import ru.practicum.statictics.model.Hits;
 import ru.practicum.statictics.repository.StatisticsRepository;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class StatisticsServiceImpl implements StatisticsService {
-
+    private final EndpointHitMapper hitsMapper;
     private final StatisticsRepository statisticsRepository;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
     @Override
-    public void addStats(EndPointHit endPointHit) {
-        statisticsRepository.save(EndPointHitMapper.toHit(endPointHit));
-
+    public void addStats(EndpointHit endPointHit) {
+        statisticsRepository.save(hitsMapper.fromEndpointHit(endPointHit));
     }
 
     @Override
     public List<ViewStats> getStatistics(String start, String end, List<String> uris, boolean unique) {
-        LocalDateTime startStat;
-        LocalDateTime endStat;
-        String app = "service";
-        List<ViewStats> views = new ArrayList<>();
-        ViewStats viewStats = new ViewStats(null, null, 0L);
-        if (uris.isEmpty()) {
-            throw new ValidateException("Uris for counting stats not passed");
-        }
-        try {
-            startStat = LocalDateTime.parse(URLDecoder.decode(start, StandardCharsets.UTF_8.toString()), formatter);
-            endStat = LocalDateTime.parse(URLDecoder.decode(end, StandardCharsets.UTF_8.toString()), formatter);
-        } catch (UnsupportedEncodingException e) {
-            throw new ValidateException("Time decoding error");
-        }
+        List<Hits> hits = statisticsRepository.findAll(
+                LocalDateTime.parse(start, formatter),
+                LocalDateTime.parse(end, formatter),
+                uris == null ? Collections.emptyList() : uris);
         if (unique) {
-            for (String uri :
-                    uris) {
-                viewStats.setUri(uri);
-                viewStats.setApp(app);
-                viewStats.setHits(statisticsRepository.getUniqueStatistics(startStat, endStat, uri));
-                views.add(viewStats);
+            List<Hits> uniqueHits = new ArrayList<>();
+            List<String> uniqueIps = hits.stream().map(Hits::getIp).distinct().collect(Collectors.toList());
+            for (String ip : uniqueIps) {
+                uniqueHits.add(hits.stream().filter(x -> x.getIp().equals(ip)).findFirst().get());
             }
-        } else {
-            for (String uri :
-                    uris) {
-                viewStats.setUri(uri);
-                viewStats.setApp(app);
-                viewStats.setHits(statisticsRepository.getStatistics(startStat, endStat, uri));
-                views.add(viewStats);
-            }
+            hits = uniqueHits;
         }
-        return views;
+        log.info("Statistics received");
+        return hits.stream().map(hitsMapper::toViewStats).collect(Collectors.toList());
     }
 }

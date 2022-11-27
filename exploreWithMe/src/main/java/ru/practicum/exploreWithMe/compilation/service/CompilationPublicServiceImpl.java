@@ -39,7 +39,7 @@ public class CompilationPublicServiceImpl implements CompilationPublicService{
     public CompilationDto getCompilationById(Long compId) {
         Compilation compilation = repository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Compilation with id = " + compId + " not found"));
-        CompilationDto dto = compilationToCompilationDto(repository.findById(compId).get());
+                        CompilationDto dto = compilationToCompilationDto(repository.findById(compId).get());
         log.info("Compilation with id = " + compId);
         return compilationToCompilationDto(compilation);
     }

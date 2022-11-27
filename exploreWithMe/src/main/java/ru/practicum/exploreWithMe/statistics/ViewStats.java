@@ -1,4 +1,4 @@
-package ru.practicum.exploreWithMe.statistics.dto;
+package ru.practicum.exploreWithMe.statistics;
 
 import lombok.*;
 
@@ -11,5 +11,5 @@ import lombok.*;
 public class ViewStats {
     private String uri;
     private String app;
-    private long hits;
+    private Integer hits;
 }
