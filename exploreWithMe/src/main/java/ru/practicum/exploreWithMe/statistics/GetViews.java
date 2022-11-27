@@ -1,7 +1,6 @@
 package ru.practicum.exploreWithMe.statistics;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.exploreWithMe.client.StatsClient;
 
@@ -9,9 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
-//
+
 @RequiredArgsConstructor
-//@Configuration
 public class GetViews {
 
     private final StatsClient statsClient;

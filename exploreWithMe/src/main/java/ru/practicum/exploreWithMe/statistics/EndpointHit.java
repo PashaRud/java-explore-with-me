@@ -2,8 +2,6 @@ package ru.practicum.exploreWithMe.statistics;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @ToString

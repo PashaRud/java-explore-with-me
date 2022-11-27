@@ -2,15 +2,11 @@ package ru.practicum.exploreWithMe.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
-import ru.practicum.exploreWithMe.enums.EventSort;
 import ru.practicum.exploreWithMe.event.service.EventPublicService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;

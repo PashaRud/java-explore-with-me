@@ -18,7 +18,7 @@ import static ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper.co
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CompilationPublicServiceImpl implements CompilationPublicService{
+public class CompilationPublicServiceImpl implements CompilationPublicService {
 
     private final CompilationRepository repository;
 

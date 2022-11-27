@@ -1,7 +1,6 @@
 package ru.practicum.exploreWithMe.compilation.dto;
 
 import lombok.*;
-import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.event.model.Event;
 
 import javax.validation.constraints.NotBlank;
