@@ -2,15 +2,14 @@ package ru.practicum.exploreWithMe.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.exploreWithMe.client.HitClient;
+import ru.practicum.exploreWithMe.statistics.dto.EndPointHit;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
-import ru.practicum.exploreWithMe.enums.EventSort;
 import ru.practicum.exploreWithMe.event.service.EventPublicService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -24,6 +23,8 @@ import java.util.List;
 public class EventPublicController {
 
     private final EventPublicService eventService;
+    private final HitClient client;
+    private final String app = "service";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
@@ -38,7 +39,15 @@ public class EventPublicController {
 //                                         @RequestParam(required = false) Boolean onlyAvailable,
 //                                         @RequestParam(required = false) EventSort sort,
                                          @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                         @Positive @RequestParam(defaultValue = "10") Integer size) {
+                                         @Positive @RequestParam(defaultValue = "10") Integer size,
+                                         HttpServletRequest request) {
+
+        client.createHit(new EndPointHit(0L,
+                request.getRequestURI(),
+                app,
+                request.getRemoteAddr(),
+                LocalDateTime.now().format(formatter)));
+
         return eventService.getEvents(text, categories, paid,
                 LocalDateTime.parse(rangeStart, formatter),
                 LocalDateTime.parse(rangeEnd, formatter),
@@ -46,8 +55,15 @@ public class EventPublicController {
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getEventById(@PathVariable Long eventId) {
+    public EventFullDto getEventById(@PathVariable Long eventId,
+                                     HttpServletRequest request) {
         EventFullDto eventFullDto = eventService.getEventById(eventId);
+
+        client.createHit(new EndPointHit(0,
+                request.getRequestURI(),
+                app,
+                request.getRemoteAddr(),
+                LocalDateTime.now().format(formatter)));
         return eventFullDto;
     }
 }

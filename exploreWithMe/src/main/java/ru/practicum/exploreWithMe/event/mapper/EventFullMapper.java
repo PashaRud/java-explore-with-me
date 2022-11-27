@@ -15,10 +15,6 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class EventFullMapper {
-
-
-
-
     public static Event toEvent(EventFullDto eventDto) {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return Event.builder()

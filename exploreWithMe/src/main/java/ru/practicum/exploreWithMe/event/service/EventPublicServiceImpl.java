@@ -31,7 +31,7 @@ public class EventPublicServiceImpl implements EventPublicService{
                                          LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                          Integer from, Integer size) {
         rangeStart = (rangeStart != null) ? rangeStart : LocalDateTime.now();
-        rangeEnd = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(300);
+        rangeEnd = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(10);
 
         if (rangeStart.isAfter(rangeEnd)) {
             throw new ValidateException("The end date and time of the event cannot " +
