@@ -53,7 +53,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Pageable pageable = FromSizeRequest.of(from, size);
 
         List<EventShortDto> eventShortDtos = eventRepository.findByInitiatorId(userId, pageable).stream()
-                .map(event ->eventToEventShortDto(event))
+                .map(event -> eventToEventShortDto(event))
                 .collect(toList());
         log.info("get Events Of User" + userId);
         return eventShortDtos;
@@ -192,7 +192,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (!eventFullDto.getState().equals(State.PUBLISHED)) {
             throw new ForbiddenException("Cannot confirm a request to participate in an unpublished event");
         }
-        if(eventFullDto.getConfirmedRequests() == eventFullDto.getParticipantLimit()) {
+        if (eventFullDto.getConfirmedRequests() == eventFullDto.getParticipantLimit()) {
             throw new ForbiddenException("Participant limit reached");
         }
         Request request = requestRepository.findById(reqId).get();
@@ -224,7 +224,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
     private void userValidation(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new NotFoundException("User with id = " + id +" not found");
+            throw new NotFoundException("User with id = " + id + " not found");
         }
     }
 

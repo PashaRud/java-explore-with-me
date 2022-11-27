@@ -2,10 +2,8 @@ package ru.practicum.exploreWithMe.request.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.enums.Status;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter

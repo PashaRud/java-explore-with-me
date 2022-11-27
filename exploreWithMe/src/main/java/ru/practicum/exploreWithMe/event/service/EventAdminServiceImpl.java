@@ -66,7 +66,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             states.add(State.PENDING);
             states.add(State.CANCELED);
             states.add(State.PUBLISHED);
-        };
+        }
 
         List<Event> events = new ArrayList<>();
         Pageable pageable = FromSizeRequest.of(from, size);

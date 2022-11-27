@@ -2,7 +2,6 @@ package ru.practicum.exploreWithMe.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
@@ -54,7 +53,7 @@ public class EventPrivateController {
     EventFullDto getEventByUserIdAndEventId(@PathVariable Long userId,
                                             @PathVariable Long eventId) {
         EventFullDto dto = eventService.getEvent(userId, eventId);
-        log.info("get Event By UserId: " + userId + "And Event Id: "+ eventId);
+        log.info("get Event By UserId: " + userId + "And Event Id: " + eventId);
         return dto;
     }
 
@@ -62,7 +61,7 @@ public class EventPrivateController {
     EventFullDto cancelEventByUserIdAndEventId(@PathVariable Long userId,
                                                @PathVariable Long eventId) {
         EventFullDto dto = eventService.cancelEvent(userId, eventId);
-        log.info("cancel Event By UserId: " + userId + "And Event Id: "+ eventId);
+        log.info("cancel Event By UserId: " + userId + "And Event Id: " + eventId);
         return dto;
     }
 
@@ -70,7 +69,7 @@ public class EventPrivateController {
     List<ParticipationRequestDto> getRequestsInfoByUserIdAndEvenId(@PathVariable Long userId,
                                                             @PathVariable Long eventId) {
         List<ParticipationRequestDto> dtos = eventService.getRequests(userId, eventId);
-        log.info("get RequestsInfo By UserId: " + userId + "And Event Id: "+ eventId);
+        log.info("get RequestsInfo By UserId: " + userId + "And Event Id: " + eventId);
         return dtos;
     }
 
@@ -79,15 +78,16 @@ public class EventPrivateController {
                                                         @PathVariable Long eventId,
                                                         @PathVariable Long reqId) {
         ParticipationRequestDto dto = eventService.confirmRequest(userId, eventId, reqId);
-        log.info("confirm Participation Request. EventId:" + eventId + " . userId: " +userId);
+        log.info("confirm Participation Request. EventId:" + eventId + " . userId: " + userId);
         return dto;
     }
+
     @PatchMapping(value = "{eventId}/requests/{reqId}/reject")
     ParticipationRequestDto rejectParticipationRequest(@PathVariable Long userId,
                                                        @PathVariable Long eventId,
                                                        @PathVariable Long reqId) {
         ParticipationRequestDto dto = eventService.rejectRequest(userId, eventId, reqId);
-        log.info("reject Participation Request. EventId:" + eventId + " . userId: " +userId);
+        log.info("reject Participation Request. EventId:" + eventId + " . userId: " + userId);
         return dto;
     }
 }

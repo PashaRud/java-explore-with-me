@@ -38,5 +38,6 @@ public class CategoryPublicServiceImpl implements CategoryPublicService {
         Category category = repository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category id = " + catId + "not found"));
         log.info("get category by id: " + catId);
-        return CategoryMapper.toCategoryDto(category);    }
+        return CategoryMapper.toCategoryDto(category);
+    }
 }

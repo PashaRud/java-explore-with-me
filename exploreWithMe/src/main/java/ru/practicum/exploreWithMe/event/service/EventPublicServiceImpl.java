@@ -3,7 +3,6 @@ package ru.practicum.exploreWithMe.event.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.enums.State;
@@ -23,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class EventPublicServiceImpl implements EventPublicService{
+public class EventPublicServiceImpl implements EventPublicService {
 
     private final EventRepository repository;
 

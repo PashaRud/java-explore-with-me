@@ -1,16 +1,12 @@
 package ru.practicum.exploreWithMe.request.controller;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.exception.ValidateException;
 import ru.practicum.exploreWithMe.request.dto.ParticipationRequestDto;
 import ru.practicum.exploreWithMe.request.service.RequestPrivateService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController

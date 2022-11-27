@@ -5,9 +5,6 @@ import ru.practicum.exploreWithMe.category.dto.CategoryDto;
 import ru.practicum.exploreWithMe.category.dto.NewCategoryDto;
 import ru.practicum.exploreWithMe.category.model.Category;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class CategoryMapper {
 

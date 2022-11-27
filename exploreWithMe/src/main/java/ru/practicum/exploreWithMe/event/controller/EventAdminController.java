@@ -2,7 +2,6 @@ package ru.practicum.exploreWithMe.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.UpdateEventRequest;
@@ -12,6 +11,7 @@ import ru.practicum.exploreWithMe.event.service.EventAdminService;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping(path = "/admin")

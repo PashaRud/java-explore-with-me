@@ -30,6 +30,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
+
     @Override
     public List<ParticipationRequestDto> getRequestsByUserId(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -49,7 +50,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() ->
-                        new NotFoundException("Event with id " + eventId + " does't exist" ));
+                        new NotFoundException("Event with id " + eventId + " does't exist"));
         if (!event.getRequestModeration()) {
             if (Objects.equals(event.getInitiator(), userId)) {
                 throw new ValidateException("The organizer cannot become a participant in the event");

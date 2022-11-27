@@ -16,7 +16,7 @@ import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.toCatego
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
-public class CategoryAdminServiceImpl implements CategoryAdminService{
+public class CategoryAdminServiceImpl implements CategoryAdminService {
 
     private final CategoryRepository repository;
 
