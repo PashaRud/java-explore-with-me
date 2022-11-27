@@ -1,6 +1,7 @@
 package ru.practicum.exploreWithMe.event.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ import static ru.practicum.exploreWithMe.event.mapper.EventFullMapper.eventToEve
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class EventPrivateServiceImpl implements EventPrivateService {
 
@@ -53,10 +55,12 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         List<EventShortDto> eventShortDtos = eventRepository.findByInitiatorId(userId, pageable).stream()
                 .map(event ->eventToEventShortDto(event))
                 .collect(toList());
+        log.info("get Events Of User" + userId);
         return eventShortDtos;
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEvent(Long userId, UpdateEventRequest updateEventRequest) {
         userValidation(userId);
         Event event = eventRepository.findById(updateEventRequest.getEventId())
@@ -99,11 +103,12 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             event.setState(State.PENDING);
         }
         EventFullDto dto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
-
+        log.info("update event: " + dto.getId());
         return dto;
     }
 
     @Override
+    @Transactional
     public EventFullDto postEvent(Long userId, NewEventDto dto) {
         userValidation(userId);
         LocalDateTime now = LocalDateTime.now();
@@ -129,6 +134,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 State.PENDING);
         eventRepository.save(event);
         EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event);
+        log.info("post event" + eventFullDto.getId());
         return eventFullDto;
     }
 
@@ -140,11 +146,12 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Long iniciatorId = event.getInitiator().getId();
         initiatorValidation(userId, iniciatorId);
         EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
-
+        log.info("get Event: " + eventId);
         return eventFullDto;
     }
 
     @Override
+    @Transactional
     public EventFullDto cancelEvent(Long userId, Long eventId) {
         eventValidation(eventId);
         userValidation(userId);
@@ -155,6 +162,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
         event.setState(State.CANCELED);
         EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
+        log.info("cancel event" + eventId);
         return eventFullDto;
     }
 
@@ -168,10 +176,12 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         List<ParticipationRequestDto> dtos = requestRepository.findByEventId(eventId).stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
+        log.info("get Requests. UserId:" + userId + " .Event id: " + eventId);
         return dtos;
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto confirmRequest(Long userId, Long eventId, Long reqId) {
         eventValidation(eventId);
         userValidation(userId);
@@ -188,10 +198,12 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Request request = requestRepository.findById(reqId).get();
         request.setStatus(Status.CONFIRMED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
+        log.info("confirm Requests. UserId:" + userId + " .Event id: " + eventId);
         return dto;
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId) {
         eventValidation(eventId);
         userValidation(userId);
@@ -206,7 +218,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Request request = requestRepository.findById(reqId).get();
         request.setStatus(Status.REJECTED);
         ParticipationRequestDto dto = RequestMapper.toRequestDto(requestRepository.save(request));
-
+        log.info("reject Requests. UserId:" + userId + " .Event id: " + eventId);
         return dto;
     }
 

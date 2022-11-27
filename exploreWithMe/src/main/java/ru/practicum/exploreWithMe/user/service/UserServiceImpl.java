@@ -27,9 +27,8 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
 
         Pageable pageable = FromSizeRequest.of(from, size);
-
         List<User> users = userRepository.findByIdIn(ids, pageable);
-
+        log.info("get Users : " + ids);
         return UserMapper.toUserDtoList(users);
     }
 
@@ -46,5 +45,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(Long userId) {
         userRepository.deleteById(userId);
+        log.info("delete User id: " + userId);
     }
 }

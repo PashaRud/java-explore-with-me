@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.UpdateEventRequest;
@@ -28,21 +29,29 @@ public class EventAdminController {
                                         @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
                                         @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
 
-        return service.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
+        List<EventFullDto> dtos = service.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
+        log.info("get Events");
+        return dtos;
     }
 
     @PutMapping("/events/{eventId}")
     public EventFullDto updateEvent(@PathVariable Long eventId, @RequestBody UpdateEventRequest updateEventRequest) {
-        return service.updateEvent(eventId, updateEventRequest);
+        EventFullDto dto = service.updateEvent(eventId, updateEventRequest);
+        log.info("update Event: " + eventId);
+        return dto;
     }
 
     @PatchMapping("/events/{eventId}/publish")
     public EventFullDto publishEvent(@PathVariable Long eventId) {
-        return service.publishEvent(eventId);
+        EventFullDto dto = service.publishEvent(eventId);
+        log.info("publish Event: " + eventId);
+        return dto;
     }
 
     @PatchMapping("/events/{eventId}/reject")
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
-        return service.rejectEvent(eventId);
+        EventFullDto dto = service.rejectEvent(eventId);
+        log.info("reject Event: " + eventId);
+        return dto;
     }
 }

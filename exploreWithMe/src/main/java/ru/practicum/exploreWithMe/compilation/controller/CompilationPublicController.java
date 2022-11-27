@@ -26,11 +26,15 @@ public class CompilationPublicController {
                                                 @PositiveOrZero int from,
                                                 @RequestParam(name = "size", defaultValue = "10")
                                                 @Positive int size) {
-        return service.getCompilations(pinned, from, size);
+        List<CompilationDto> dtos = service.getCompilations(pinned, from, size);
+        log.info("get Compilations ");
+        return dtos;
     }
 
     @GetMapping("/{compId}")
     public CompilationDto getCompilationById(@PathVariable Long compId) {
-        return service.getCompilationById(compId);
+        CompilationDto dto = service.getCompilationById(compId);
+        log.info("get Compilation by id: " + compId);
+        return dto;
     }
 }

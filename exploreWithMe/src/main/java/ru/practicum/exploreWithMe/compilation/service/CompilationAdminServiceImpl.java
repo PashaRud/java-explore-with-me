@@ -3,6 +3,7 @@ package ru.practicum.exploreWithMe.compilation.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.compilation.dto.CompilationDto;
 import ru.practicum.exploreWithMe.compilation.dto.NewCompilationDto;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
@@ -19,6 +20,7 @@ import static ru.practicum.exploreWithMe.compilation.mapper.CompilationMapper.to
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class CompilationAdminServiceImpl implements CompilationAdminService {
 
@@ -31,16 +33,20 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         Set<Event> events = new HashSet<>(eventRepository.findAllById(dto.getEvents()));
         Compilation compilation = compilationRepository.save(toCompilationFromNew(dto, events));
         compilation.setEvents(events);
+        log.info("create Compilation: " + dto);
         return compilationToCompilationDto(compilation);
     }
 
     @Override
+    @Transactional
     public void deleteCompilation(Long compId) {
         compilationValidation(compId);
         compilationRepository.deleteById(compId);
+        log.info("delete Compilation: " + compId);
     }
 
     @Override
+    @Transactional
     public void deleteEventFromCompilation(Long compId, Long eventId) {
         compilationValidation(compId);
         eventValidation(eventId);
@@ -50,6 +56,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
             events.remove(eventRepository.findById(eventId).get());
             compilation.setEvents(events);
             compilationRepository.save(compilation);
+            log.info("delete Event(id): " + eventId + " From Compilation(id): " + compId);
         }
     }
 
@@ -75,6 +82,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
             compilation.setPinned(false);
             compilationRepository.save(compilation);
         }
+        log.info("unpin compilation: " + compId);
     }
 
     @Override
@@ -84,6 +92,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         if (!compilation.isPinned()) {
             compilation.setPinned(true);
             compilationRepository.save(compilation);
+            log.info("pin compilation: " + compId);
         }
     }
 

@@ -1,6 +1,7 @@
 package ru.practicum.exploreWithMe.event.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import static ru.practicum.exploreWithMe.event.mapper.EventFullMapper.eventToEve
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class EventAdminServiceImpl implements EventAdminService {
 
@@ -32,7 +34,6 @@ public class EventAdminServiceImpl implements EventAdminService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
-    @Transactional
     public List<EventFullDto> getEvents(List<Long> users, List<State> states,
                                         List<Long> categories, String rangeStart,
                                         String rangeEnd, int from, int size) {
@@ -89,7 +90,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         List<EventFullDto> eventFullDtos = events.stream()
                 .map(event -> eventToEventFullDto(event))
                 .collect(toList());
-
+        log.info("get events");
         return eventFullDtos;
     }
 
@@ -126,7 +127,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         }
 
         event = eventRepository.save(event);
-
+        log.info("update Event: " + eventId);
         return eventToEventFullDto(event);
     }
 
@@ -143,6 +144,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         }
         event.setState(State.PUBLISHED);
         EventFullDto eventDto = eventToEventFullDto(eventRepository.save(event));
+        log.info("publish Event: " + eventId);
         return eventDto;
     }
 
@@ -156,6 +158,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         }
         event.setState(State.CANCELED);
         EventFullDto eventDto = eventToEventFullDto(eventRepository.save(event));
+        log.info("reject Event: " + eventId);
         return eventDto;
     }
 }

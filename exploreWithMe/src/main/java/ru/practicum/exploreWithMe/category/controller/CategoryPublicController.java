@@ -23,11 +23,15 @@ public class CategoryPublicController {
     @GetMapping
     public List<CategoryDto> getCategories(@RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
                                            @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
-        return service.getCategories(from, size);
+        List<CategoryDto> dtos = service.getCategories(from, size);
+        log.info("get Category");
+        return dtos;
     }
 
     @GetMapping("/{catId}")
     public CategoryDto getCategoryById(@PathVariable Long catId) {
-        return service.getCategoryById(catId);
+        CategoryDto dto = service.getCategoryById(catId);
+        log.info("get Category By Id: " + catId);
+        return dto;
     }
 }

@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
@@ -27,51 +28,67 @@ public class EventPrivateController {
     List<EventShortDto> userEvents(@PathVariable Long userId,
                                    @RequestParam(defaultValue = "0") int from,
                                    @RequestParam(defaultValue = "10") int size) {
-        return eventService.getEventsOfUser(userId, from, size);
+        List<EventShortDto> dtos = eventService.getEventsOfUser(userId, from, size);
+        log.info("user Events: " + userId);
+        return dtos;
     }
 
     @PatchMapping
     EventFullDto updateEvent(@PathVariable Long userId,
                               @RequestBody UpdateEventRequest event) {
-        return eventService.updateEvent(userId, event);
+        EventFullDto dto = eventService.updateEvent(userId, event);
+        log.info("update Event: " + userId);
+        return dto;
     }
 
 
     @PostMapping
     EventFullDto createEvent(@PathVariable Long userId,
                              @Valid @RequestBody NewEventDto event) {
-        return eventService.postEvent(userId, event);
+        EventFullDto dto = eventService.postEvent(userId, event);
+        log.info("create Event: " + userId);
+        return dto;
     }
 
     @GetMapping(value = "{eventId}")
     EventFullDto getEventByUserIdAndEventId(@PathVariable Long userId,
                                             @PathVariable Long eventId) {
-        return eventService.getEvent(userId, eventId);
+        EventFullDto dto = eventService.getEvent(userId, eventId);
+        log.info("get Event By UserId: " + userId + "And Event Id: "+ eventId);
+        return dto;
     }
 
     @PatchMapping(value = "{eventId}")
     EventFullDto cancelEventByUserIdAndEventId(@PathVariable Long userId,
                                                @PathVariable Long eventId) {
-        return eventService.cancelEvent(userId, eventId);
+        EventFullDto dto = eventService.cancelEvent(userId, eventId);
+        log.info("cancel Event By UserId: " + userId + "And Event Id: "+ eventId);
+        return dto;
     }
 
     @GetMapping(value = "{eventId}/requests")
     List<ParticipationRequestDto> getRequestsInfoByUserIdAndEvenId(@PathVariable Long userId,
                                                             @PathVariable Long eventId) {
-        return eventService.getRequests(userId, eventId);
+        List<ParticipationRequestDto> dtos = eventService.getRequests(userId, eventId);
+        log.info("get RequestsInfo By UserId: " + userId + "And Event Id: "+ eventId);
+        return dtos;
     }
 
     @PatchMapping(value = "{eventId}/requests/{reqId}/confirm")
     ParticipationRequestDto confirmParticipationRequest(@PathVariable Long userId,
                                                         @PathVariable Long eventId,
                                                         @PathVariable Long reqId) {
-        return eventService.confirmRequest(userId, eventId, reqId);
+        ParticipationRequestDto dto = eventService.confirmRequest(userId, eventId, reqId);
+        log.info("confirm Participation Request. EventId:" + eventId + " . userId: " +userId);
+        return dto;
     }
     @PatchMapping(value = "{eventId}/requests/{reqId}/reject")
     ParticipationRequestDto rejectParticipationRequest(@PathVariable Long userId,
                                                        @PathVariable Long eventId,
                                                        @PathVariable Long reqId) {
-        return eventService.rejectRequest(userId, eventId, reqId);
+        ParticipationRequestDto dto = eventService.rejectRequest(userId, eventId, reqId);
+        log.info("reject Participation Request. EventId:" + eventId + " . userId: " +userId);
+        return dto;
     }
 }
 

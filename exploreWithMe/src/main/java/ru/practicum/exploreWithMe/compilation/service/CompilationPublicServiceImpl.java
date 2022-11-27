@@ -32,6 +32,7 @@ public class CompilationPublicServiceImpl implements CompilationPublicService{
             compilationDto = compilationToCompilationDto(compilation);
             compilationDtos.add(compilationDto);
         }
+        log.info("get compilation");
         return compilationDtos;
     }
 

@@ -35,19 +35,21 @@ public class EventPublicController {
                                                  defaultValue = "1950-01-01 13:30:38") String rangeStart,
                                          @RequestParam(name = "rangeEnd",
                                                  defaultValue = "2090-01-01 00:00:00") String rangeEnd,
-//                                         @RequestParam(required = false) Boolean onlyAvailable,
-//                                         @RequestParam(required = false) EventSort sort,
                                          @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                          @Positive @RequestParam(defaultValue = "10") Integer size) {
-        return eventService.getEvents(text, categories, paid,
+        List<EventShortDto> dtos = eventService.getEvents(text, categories, paid,
                 LocalDateTime.parse(rangeStart, formatter),
                 LocalDateTime.parse(rangeEnd, formatter),
                 from, size);
+        log.info("get Events");
+        return dtos;
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getEventById(@PathVariable Long eventId) {
         EventFullDto eventFullDto = eventService.getEventById(eventId);
-        return eventFullDto;
+        EventFullDto dto = eventFullDto;
+        log.info("get Event By Id: " + eventId);
+        return dto;
     }
 }

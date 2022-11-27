@@ -44,6 +44,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
 
         Event event = eventRepository.findById(eventId)
@@ -74,6 +75,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Request for participation in the event with id = " + requestId +

@@ -14,6 +14,7 @@ import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.toCatego
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class CategoryAdminServiceImpl implements CategoryAdminService{
 
@@ -41,8 +42,9 @@ public class CategoryAdminServiceImpl implements CategoryAdminService{
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long catId) {
-
+        log.info("delete category: " + catId);
         repository.deleteById(catId);
     }
 }
