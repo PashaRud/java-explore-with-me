@@ -23,9 +23,8 @@ public class EventPublicController {
     private final EventPublicService eventService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-
     @GetMapping
-    public List<EventShortDto> getEvents(@RequestParam(name = "text", required = false) String text,
+    public List<EventShortDto> getEvents(@RequestParam(name = "text", required = false, defaultValue = "") String text,
                                          @RequestParam(name = "categories", required = false) List<Long> categories,
                                          @RequestParam(name = "paid", required = false) Boolean paid,
                                          @RequestParam(name = "rangeStart",

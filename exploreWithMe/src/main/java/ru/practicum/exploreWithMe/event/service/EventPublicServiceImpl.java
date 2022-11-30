@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.event.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.client.StatsClient;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
@@ -9,17 +10,18 @@ import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.exception.ForbiddenException;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
-import ru.practicum.exploreWithMe.exception.ValidateException;
 import ru.practicum.exploreWithMe.event.mapper.EventFullMapper;
 import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
+import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,34 +36,32 @@ public class EventPublicServiceImpl implements EventPublicService {
                                          LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                          Boolean onlyAvailable, String sort,
                                          Integer from, Integer size, HttpServletRequest request) {
-        rangeStart = (rangeStart != null) ? rangeStart : LocalDateTime.now();
-        rangeEnd = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(300);
+
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now();
         saveEndpointHit(request);
-        if (rangeStart.isAfter(rangeEnd)) {
-            throw new ValidateException("The end date and time of the event cannot " +
-                    "be earlier than the start date of the event.");
+        if (rangeStart != null) {
+            start = rangeStart;
         }
-
-        List<Event> events;
-
-        if (categories != null) {
-            events = repository.findByCategoryIdsAndText(text, categories);
-        } else {
-            events = repository.findByText(text);
+        if (rangeEnd != null) {
+            end = rangeEnd;
         }
+        if (categories == null) {
+            categories = new ArrayList<>();
+        }
+        Pageable pageable = FromSizeRequest.of(from, size);
+        List<Event> events = repository.findEvents(text, categories, paid, start, end, onlyAvailable, pageable);
 
-        List<EventShortDto> eventShortDtos = events.stream()
-                .map(dtos -> EventFullMapper.eventToEventShortDto(dtos))
-                .collect(toList());
-            eventShortDtos = eventShortDtos.stream()
-                    .sorted(Comparator.comparing(EventShortDto::getEventDate))
-                    .skip(from)
-                    .limit(size)
-                    .collect(toList());
-        log.info("get events");
-        return eventShortDtos;
-}
-
+        if (Objects.equals(sort, "EVENT_DATE")) {
+            events = events
+                    .stream()
+                    .sorted(Comparator.comparing(Event::getEventDate).reversed())
+                    .collect(Collectors.toList());
+        }
+        return events.stream()
+                .map(EventFullMapper::eventToEventShortDto)
+                .collect(Collectors.toList());
+    }
     @Override
     public EventFullDto getEventById(Long id, HttpServletRequest request) {
         eventValidation(id);
