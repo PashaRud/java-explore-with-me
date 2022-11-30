@@ -62,6 +62,7 @@ public class EventPublicServiceImpl implements EventPublicService {
                 .map(EventFullMapper::eventToEventShortDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public EventFullDto getEventById(Long id, HttpServletRequest request) {
         eventValidation(id);
