@@ -7,6 +7,7 @@ import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.event.service.EventPublicService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -31,19 +32,23 @@ public class EventPublicController {
                                                  defaultValue = "1950-01-01 13:30:38") String rangeStart,
                                          @RequestParam(name = "rangeEnd",
                                                  defaultValue = "2090-01-01 00:00:00") String rangeEnd,
+                                         @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                         @RequestParam(required = false) String sort,
                                          @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                         @Positive @RequestParam(defaultValue = "10") Integer size) {
+                                         @Positive @RequestParam(defaultValue = "10") Integer size,
+                                         HttpServletRequest request) {
         List<EventShortDto> dtos = eventService.getEvents(text, categories, paid,
                 LocalDateTime.parse(rangeStart, formatter),
                 LocalDateTime.parse(rangeEnd, formatter),
-                from, size);
+                onlyAvailable, sort,
+                from, size, request);
         log.info("get Events");
         return dtos;
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getEventById(@PathVariable Long eventId) {
-        EventFullDto eventFullDto = eventService.getEventById(eventId);
+    public EventFullDto getEventById(@PathVariable Long eventId, HttpServletRequest request) {
+        EventFullDto eventFullDto = eventService.getEventById(eventId, request);
         EventFullDto dto = eventFullDto;
         log.info("get Event By Id: " + eventId);
         return dto;

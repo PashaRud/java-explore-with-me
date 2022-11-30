@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     public UserDto create(NewUserRequest newUser) {
         try {
             log.info("Create name: " + newUser.toString());
-            return  UserMapper.toUserDto(userRepository.save(UserMapper.NewUserToUser(newUser)));
+            return  UserMapper.toUserDto(userRepository.save(UserMapper.newUserToUser(newUser)));
         } catch (RuntimeException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }

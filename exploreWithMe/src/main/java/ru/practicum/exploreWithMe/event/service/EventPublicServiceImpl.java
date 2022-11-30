@@ -3,6 +3,7 @@ package ru.practicum.exploreWithMe.event.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.exploreWithMe.client.StatsClient;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.enums.State;
@@ -13,6 +14,7 @@ import ru.practicum.exploreWithMe.event.mapper.EventFullMapper;
 import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -25,14 +27,16 @@ import static java.util.stream.Collectors.toList;
 public class EventPublicServiceImpl implements EventPublicService {
 
     private final EventRepository repository;
+    private final StatsClient statsClient;
 
     @Override
     public List<EventShortDto> getEvents(String text, List<Long> categories, Boolean paid,
                                          LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                         Integer from, Integer size) {
+                                         Boolean onlyAvailable, String sort,
+                                         Integer from, Integer size, HttpServletRequest request) {
         rangeStart = (rangeStart != null) ? rangeStart : LocalDateTime.now();
         rangeEnd = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(300);
-
+        saveEndpointHit(request);
         if (rangeStart.isAfter(rangeEnd)) {
             throw new ValidateException("The end date and time of the event cannot " +
                     "be earlier than the start date of the event.");
@@ -59,8 +63,9 @@ public class EventPublicServiceImpl implements EventPublicService {
 }
 
     @Override
-    public EventFullDto getEventById(Long id) {
+    public EventFullDto getEventById(Long id, HttpServletRequest request) {
         eventValidation(id);
+        saveEndpointHit(request);
         EventFullDto dto = EventFullMapper.eventToEventFullDto(repository.findById(id).get());
         if (!State.PUBLISHED.equals(dto.getState())) {
             throw new ForbiddenException("Event not published.");
@@ -75,4 +80,8 @@ public class EventPublicServiceImpl implements EventPublicService {
             throw new NotFoundException("Events with id = " + id + " не найдено");
         }
     }
+    private void saveEndpointHit(HttpServletRequest request) {
+        statsClient.addStats(request.getRequestURI(), request.getRemoteAddr());
+    }
+
 }

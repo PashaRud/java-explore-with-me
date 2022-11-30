@@ -25,7 +25,7 @@ public class EventFullMapper {
                 .id(eventDto.getId())
                 .title(eventDto.getTitle())
                 .annotation(eventDto.getAnnotation())
-                .category(CategoryMapper.CategoryDtoToCategory(eventDto.getCategory()))
+                .category(CategoryMapper.categoryDtoToCategory(eventDto.getCategory()))
                 .eventDate(LocalDateTime.parse(eventDto.getEventDate(), formatter))
                 .lon(eventDto.getLocation().getLon())
                 .lat(eventDto.getLocation().getLat())

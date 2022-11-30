@@ -18,17 +18,11 @@ public class UserMapper {
                 user.getName());
     }
 
-    public static User NewUserToUser(NewUserRequest request) {
+    public static User newUserToUser(NewUserRequest request) {
         return User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .build();
-    }
-
-    public static User toUser(UserDto userDto) {
-        return new User(userDto.getId(),
-                userDto.getEmail(),
-                userDto.getName());
     }
 
     public static User toUserFromShortDto(UserShortDto userShortDto) {

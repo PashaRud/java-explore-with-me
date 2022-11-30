@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.category.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.category.dto.CategoryDto;
@@ -9,7 +10,7 @@ import ru.practicum.exploreWithMe.category.dto.NewCategoryDto;
 import ru.practicum.exploreWithMe.exception.AlreadyExistsException;
 import ru.practicum.exploreWithMe.category.repository.CategoryRepository;
 
-import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.NewCategoryDtoToCategory;
+import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.newCategoryDtoToCategory;
 import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.toCategoryDto;
 
 @Service
@@ -25,8 +26,8 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     public CategoryDto updateCategory(NewCategoryDto dto) {
         try {
             log.info("Upd category: " + dto.toString());
-            return  toCategoryDto(repository.save(NewCategoryDtoToCategory(dto)));
-        } catch (RuntimeException e) {
+            return  toCategoryDto(repository.save(newCategoryDtoToCategory(dto)));
+        } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }
     }
@@ -35,8 +36,8 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
     public CategoryDto createCategory(NewCategoryDto dto) {
         try {
             log.info("Create category: " + dto.toString());
-            return  toCategoryDto(repository.save(NewCategoryDtoToCategory(dto)));
-        } catch (RuntimeException e) {
+            return  toCategoryDto(repository.save(newCategoryDtoToCategory(dto)));
+        } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }
     }

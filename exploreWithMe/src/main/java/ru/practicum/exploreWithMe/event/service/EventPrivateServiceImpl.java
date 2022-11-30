@@ -66,8 +66,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Event event = eventRepository.findById(updateEventRequest.getEventId())
                 .orElseThrow(() -> new NotFoundException("Event with id=" + updateEventRequest.getEventId() +
                         " not found."));
-        Long EventIniciatorId = event.getInitiator().getId();
-        if (!userId.equals(EventIniciatorId)) {
+        Long eventIniciatorId = event.getInitiator().getId();
+        if (!userId.equals(eventIniciatorId)) {
             throw new ForbiddenException("This user is not the initiator");
         }
         if (updateEventRequest.getAnnotation() != null) {

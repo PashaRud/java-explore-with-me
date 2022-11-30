@@ -37,4 +37,13 @@ public class EndpointHitMapper {
                 .timestamp(LocalDateTime.parse(endpointHit.getTimestamp(), formatter))
                 .build();
     }
+
+    public EndpointHit toEndpointHit(Hits hit) {
+        return EndpointHit.builder()
+                .uri(hit.getUri())
+                .ip(hit.getIp())
+                .id(hit.getId())
+                .timestamp(hit.getTimestamp().format(formatter))
+                .build();
+    }
 }

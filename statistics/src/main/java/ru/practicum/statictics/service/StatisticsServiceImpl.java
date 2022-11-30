@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.statictics.dto.EndpointHit;
+import ru.practicum.statictics.dto.EventViews;
 import ru.practicum.statictics.dto.ViewStats;
 import ru.practicum.statictics.mapper.EndpointHitMapper;
 import ru.practicum.statictics.model.Hits;
@@ -26,8 +27,9 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 
     @Override
-    public void addStats(EndpointHit endPointHit) {
-        statisticsRepository.save(hitsMapper.fromEndpointHit(endPointHit));
+    public EndpointHit addStats(EndpointHit endPointHit) {
+        Hits hit = statisticsRepository.save(hitsMapper.fromEndpointHit(endPointHit));
+        return hitsMapper.toEndpointHit(hit);
     }
 
     @Override
@@ -46,5 +48,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
         log.info("Statistics received");
         return hits.stream().map(hitsMapper::toViewStats).collect(Collectors.toList());
+    }
+
+    @Override
+    public EventViews getEventViews(String start, String end, List<String> uris, Boolean unique) {
+        List<ViewStats> viewStats = getStatistics(start, end, uris, unique);
+
+        return new EventViews(viewStats);
     }
 }

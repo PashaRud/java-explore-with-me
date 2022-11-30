@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.statictics.dto.EndpointHit;
+import ru.practicum.statictics.dto.EventViews;
 import ru.practicum.statictics.dto.ViewStats;
 import ru.practicum.statictics.service.StatisticsService;
 
@@ -35,5 +36,15 @@ public class StatisticsController {
                                          @RequestParam(name = "uris") List<String> uris,
                                          @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
         return service.getStatistics(start, end, uris, unique);
+    }
+
+    @GetMapping("/views")
+    public EventViews getEventViews(@RequestParam String start, @RequestParam String end,
+                                    @RequestParam(required = false) List<String> uris,
+                                    @RequestParam(defaultValue = "false") Boolean unique) {
+        EventViews eventViews = service.getEventViews(start, end, uris, unique);
+        log.info("Получена статистика по просмотрам событий.");
+
+        return eventViews;
     }
 }

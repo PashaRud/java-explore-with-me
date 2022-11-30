@@ -15,14 +15,14 @@ public class CategoryMapper {
                 .build();
     }
 
-    public static Category CategoryDtoToCategory(CategoryDto categoryDto) {
+    public static Category categoryDtoToCategory(CategoryDto categoryDto) {
         return Category.builder()
                 .id(categoryDto.getId())
                 .name(categoryDto.getName())
                 .build();
     }
 
-    public static Category NewCategoryDtoToCategory(NewCategoryDto categoryDto) {
+    public static Category newCategoryDtoToCategory(NewCategoryDto categoryDto) {
         return Category.builder()
                 .name(categoryDto.getName())
                 .build();
