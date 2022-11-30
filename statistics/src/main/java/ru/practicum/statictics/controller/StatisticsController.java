@@ -3,11 +3,7 @@ package ru.practicum.statictics.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.statictics.dto.EndpointHit;
 import ru.practicum.statictics.dto.EventViews;
 import ru.practicum.statictics.dto.ViewStats;
@@ -21,13 +17,16 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping
 public class StatisticsController {
 
     private final StatisticsService service;
 
     @PostMapping("/hit")
-    public void addHit(@RequestBody EndpointHit endpointHit) {
-        service.addStats(endpointHit);
+    public EndpointHit addHit(@RequestBody EndpointHit endpointHit) {
+        EndpointHit hit = service.addStats(endpointHit);
+        log.info("Информация о запросе: " + hit.getUri() + " сохранена");
+        return hit;
     }
 
     @GetMapping("/stats")
@@ -35,7 +34,9 @@ public class StatisticsController {
                                          @RequestParam(name = "end") @NotNull String end,
                                          @RequestParam(name = "uris") List<String> uris,
                                          @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
-        return service.getStatistics(start, end, uris, unique);
+        List<ViewStats> stats = service.getStatistics(start, end, uris, unique);
+        log.info("Получена статистика по посещениям");
+        return stats;
     }
 
     @GetMapping("/views")
@@ -43,7 +44,7 @@ public class StatisticsController {
                                     @RequestParam(required = false) List<String> uris,
                                     @RequestParam(defaultValue = "false") Boolean unique) {
         EventViews eventViews = service.getEventViews(start, end, uris, unique);
-        log.info("Получена статистика по просмотрам событий.");
+        log.info("Получена статистика по просмотрам");
 
         return eventViews;
     }
