@@ -80,6 +80,7 @@ public class EventPublicServiceImpl implements EventPublicService {
             throw new NotFoundException("Events with id = " + id + " не найдено");
         }
     }
+
     private void saveEndpointHit(HttpServletRequest request) {
         statsClient.addStats(request.getRequestURI(), request.getRemoteAddr());
     }
