@@ -1,14 +1,14 @@
-package ru.practicum.statictics.service;
+package ru.practicum.statistics.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.statictics.dto.EndpointHit;
-import ru.practicum.statictics.dto.EventViews;
-import ru.practicum.statictics.dto.ViewStats;
-import ru.practicum.statictics.mapper.EndpointHitMapper;
-import ru.practicum.statictics.model.Hits;
-import ru.practicum.statictics.repository.StatisticsRepository;
+import ru.practicum.statistics.dto.EndpointHit;
+import ru.practicum.statistics.dto.EventViews;
+import ru.practicum.statistics.dto.ViewStats;
+import ru.practicum.statistics.mapper.EndpointHitMapper;
+import ru.practicum.statistics.model.Hits;
+import ru.practicum.statistics.repository.StatisticsRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

@@ -1,8 +1,8 @@
-package ru.practicum.statictics.service;
+package ru.practicum.statistics.service;
 
-import ru.practicum.statictics.dto.EndpointHit;
-import ru.practicum.statictics.dto.EventViews;
-import ru.practicum.statictics.dto.ViewStats;
+import ru.practicum.statistics.dto.EndpointHit;
+import ru.practicum.statistics.dto.EventViews;
+import ru.practicum.statistics.dto.ViewStats;
 
 import java.util.List;
 

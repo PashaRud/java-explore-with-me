@@ -1,13 +1,13 @@
-package ru.practicum.statictics.controller;
+package ru.practicum.statistics.controller;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.statictics.dto.EndpointHit;
-import ru.practicum.statictics.dto.EventViews;
-import ru.practicum.statictics.dto.ViewStats;
-import ru.practicum.statictics.service.StatisticsService;
+import ru.practicum.statistics.dto.EndpointHit;
+import ru.practicum.statistics.dto.EventViews;
+import ru.practicum.statistics.dto.ViewStats;
+import ru.practicum.statistics.service.StatisticsService;
 
 
 import javax.validation.constraints.NotNull;

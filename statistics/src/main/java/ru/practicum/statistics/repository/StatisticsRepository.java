@@ -1,9 +1,9 @@
-package ru.practicum.statictics.repository;
+package ru.practicum.statistics.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.practicum.statictics.model.Hits;
+import ru.practicum.statistics.model.Hits;
 
 import java.time.LocalDateTime;
 import java.util.List;

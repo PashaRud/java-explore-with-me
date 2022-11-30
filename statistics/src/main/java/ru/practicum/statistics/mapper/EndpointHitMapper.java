@@ -1,10 +1,10 @@
-package ru.practicum.statictics.mapper;
+package ru.practicum.statistics.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.statictics.dto.EndpointHit;
-import ru.practicum.statictics.dto.ViewStats;
-import ru.practicum.statictics.model.Hits;
-import ru.practicum.statictics.repository.StatisticsRepository;
+import ru.practicum.statistics.dto.EndpointHit;
+import ru.practicum.statistics.dto.ViewStats;
+import ru.practicum.statistics.model.Hits;
+import ru.practicum.statistics.repository.StatisticsRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
