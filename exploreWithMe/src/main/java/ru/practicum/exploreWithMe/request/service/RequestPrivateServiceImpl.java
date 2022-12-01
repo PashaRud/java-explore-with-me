@@ -18,7 +18,6 @@ import ru.practicum.exploreWithMe.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,9 +51,6 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 .orElseThrow(() ->
                         new NotFoundException("Event with id " + eventId + " does't exist"));
         if (!event.getRequestModeration()) {
-            if (Objects.equals(event.getInitiator(), userId)) {
-                throw new ValidateException("The organizer cannot become a participant in the event");
-            }
             if (!event.getState().equals(State.PUBLISHED)) {
                 throw new ValidateException("The event has not yet been published");
             }
