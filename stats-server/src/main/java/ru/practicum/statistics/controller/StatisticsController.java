@@ -1,4 +1,4 @@
-package ru.practicum.statistics.controller;
+package ru.practicum.controller;
 
 
 import lombok.RequiredArgsConstructor;
