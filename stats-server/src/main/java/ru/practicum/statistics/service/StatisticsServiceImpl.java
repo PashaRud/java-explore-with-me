@@ -34,11 +34,6 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<ViewStats> getStatistics(String start, String end, List<String> uris, boolean unique) {
-//        List<Hits> hits = statisticsRepository.findAll(
-//                LocalDateTime.parse(start, formatter),
-//                LocalDateTime.parse(end, formatter),
-//                uris == null ? Collections.emptyList() : uris);
-
         List<Hits> hits = statisticsRepository.findAllByTimestampBetweenAndUriIn(LocalDateTime.parse(
                 start, formatter), LocalDateTime.parse(end, formatter), uris);
 
