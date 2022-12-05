@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.enums.Status;
@@ -66,7 +67,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 .build();
         try {
             return RequestMapper.toRequestDto(requestRepository.save(RequestMapper.toRequest(requestDto)));
-        } catch (RuntimeException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new ValidateException("You have already made a request to participate in this event");
         }
     }

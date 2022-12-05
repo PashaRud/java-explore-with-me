@@ -34,15 +34,25 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<ViewStats> getStatistics(String start, String end, List<String> uris, boolean unique) {
-        List<Hits> hits = statisticsRepository.findAll(
-                LocalDateTime.parse(start, formatter),
-                LocalDateTime.parse(end, formatter),
-                uris == null ? Collections.emptyList() : uris);
+//        List<Hits> hits = statisticsRepository.findAll(
+//                LocalDateTime.parse(start, formatter),
+//                LocalDateTime.parse(end, formatter),
+//                uris == null ? Collections.emptyList() : uris);
+
+        List<Hits> hits = statisticsRepository.findAllByTimestampBetweenAndUriIn(LocalDateTime.parse(
+                start, formatter), LocalDateTime.parse(end, formatter), uris);
+
         if (unique) {
             List<Hits> uniqueHits = new ArrayList<>();
-            List<String> uniqueIps = hits.stream().map(Hits::getIp).distinct().collect(Collectors.toList());
+            List<String> uniqueIps = hits.stream()
+                    .map(Hits::getIp)
+                    .distinct()
+                    .collect(Collectors.toList());
             for (String ip : uniqueIps) {
-                uniqueHits.add(hits.stream().filter(x -> x.getIp().equals(ip)).findFirst().get());
+                uniqueHits.add(hits.stream()
+                        .filter(x -> x.getIp().equals(ip))
+                        .findFirst()
+                        .get());
             }
             hits = uniqueHits;
         }

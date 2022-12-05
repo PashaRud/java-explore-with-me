@@ -12,6 +12,7 @@ import java.util.List;
 public interface StatisticsRepository extends JpaRepository<Hits, Long> {
     List<Hits> findAllByAppAndUri(String app, String uri);
 
+    List<Hits> findAllByTimestampBetweenAndUriIn(LocalDateTime start, LocalDateTime end, List<String> uris);
     @Query("select h from Hits h " +
             "where h.timestamp >= ?1 " +
             "and h.timestamp <= ?2 " +

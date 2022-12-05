@@ -2,6 +2,7 @@ package ru.practicum.exploreWithMe.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
         try {
             log.info("Create name: " + newUser.toString());
             return  UserMapper.toUserDto(userRepository.save(UserMapper.newUserToUser(newUser)));
-        } catch (RuntimeException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException("Name must be unique.");
         }
     }
