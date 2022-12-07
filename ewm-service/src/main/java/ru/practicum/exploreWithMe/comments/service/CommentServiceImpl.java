@@ -12,11 +12,9 @@ import ru.practicum.exploreWithMe.comments.dto.UpdateCommentDto;
 import ru.practicum.exploreWithMe.comments.mapper.CommentsMapper;
 import ru.practicum.exploreWithMe.comments.model.Comment;
 import ru.practicum.exploreWithMe.comments.repository.CommentRepository;
-import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
 import ru.practicum.exploreWithMe.exception.ValidateException;
-import ru.practicum.exploreWithMe.user.model.User;
 import ru.practicum.exploreWithMe.user.repository.UserRepository;
 
 import java.util.Collection;
@@ -24,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.exploreWithMe.comments.mapper.CommentsMapper.fromCommentToCommentDto;
+import static ru.practicum.exploreWithMe.comments.mapper.CommentsMapper.fromNewCommentDto;
 
 @Service
 @Slf4j
@@ -38,11 +37,9 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto createComment(NewCommentDto commentDto, Long eventId, Long userId) {
         eventValidation(eventId);
         userValidation(userId);
-        Event event = eventRepository.findById(eventId).get();
-        User user = userRepository.findById(userId).get();
-        Comment comment = CommentsMapper.fromNewCommentDto(commentDto);
-        comment.setEvent(event);
-        comment.setAuthor(user);
+        Comment comment = fromNewCommentDto(commentDto);
+        comment.setEventId(eventId);
+        comment.setAuthorId(userId);
         try {
             return fromCommentToCommentDto(repository.save(comment));
         } catch (DataIntegrityViolationException e) {
@@ -54,8 +51,12 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto patchComment(UpdateCommentDto commentDto, Long eventId, Long userId) {
         eventValidation(eventId);
         userValidation(userId);
+        Comment checkComment = getCommentById(commentDto.getCommentId(), userId);
         Comment comment = CommentsMapper.fromUpdateCommentDto(commentDto);
         comment.setText(commentDto.getText());
+        comment.setCreated(checkComment.getCreated());
+        comment.setEventId(checkComment.getEventId());
+        comment.setAuthorId(checkComment.getAuthorId());
         try {
             return fromCommentToCommentDto(repository.save(comment));
         } catch (DataIntegrityViolationException e) {
@@ -95,7 +96,7 @@ public class CommentServiceImpl implements CommentService {
         comment.orElseThrow(() -> {
             throw new NotFoundException("Comment with id: " + commentId + " does not exist");
         });
-        if (!comment.get().getAuthor().getId().equals(userId)) {
+        if (!comment.get().getAuthorId().equals(userId)) {
             throw new ValidateException("User with id " + userId + " not the author of the comment c id " + commentId);
         }
         return comment.get();

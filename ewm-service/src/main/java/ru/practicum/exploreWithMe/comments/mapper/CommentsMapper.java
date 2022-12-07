@@ -13,18 +13,9 @@ public class CommentsMapper {
         return new CommentDto(
                 comments.getId(),
                 comments.getText(),
-                comments.getAuthor().getId(),
-                comments.getEvent().getId(),
+                comments.getAuthorId(),
+                comments.getEventId(),
                 comments.getCreated());
-    }
-
-    public static Comment fromCommentDtoToComment(CommentDto commentsDto) {
-        return new Comment(
-                commentsDto.getId(),
-                commentsDto.getText(),
-                null,
-                null,
-                commentsDto.getCreate());
     }
 
     public static Comment fromNewCommentDto(NewCommentDto commentDto) {

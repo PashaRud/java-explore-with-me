@@ -20,15 +20,12 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
     @Column(name = "text", nullable = false)
     private String text;
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User author;
-    @Column(name = "created", nullable = false)
+    @Column(name = "author_id")
+    private Long authorId;
+    @Column(name = "event_id")
+    private Long eventId;
+    @Column(name = "created_on", nullable = false)
     private LocalDateTime created;
 }

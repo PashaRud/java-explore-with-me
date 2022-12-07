@@ -26,12 +26,12 @@ public class CommentPrivateController {
         return service.createComment(commentDto, eventId, userId);
     }
 
-    @PatchMapping(value = "/events/{eventId}/comments")
+    @PatchMapping(value = "/{userId}/events/{eventId}/comments")
     public CommentDto patchComment(@RequestBody @Valid UpdateCommentDto commentDto,
                                    @PathVariable Long eventId,
-                                   @PathVariable Long commentId) {
+                                   @PathVariable Long userId) {
         log.info("Patch comment " + commentDto + " for eventId: " + eventId);
-        return service.patchComment(commentDto, eventId, commentId);
+        return service.patchComment(commentDto, eventId, userId);
     }
 
     @DeleteMapping(value = {"/{userId}/comments/{commentId}"})

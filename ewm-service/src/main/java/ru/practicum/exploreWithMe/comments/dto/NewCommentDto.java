@@ -2,7 +2,7 @@ package ru.practicum.exploreWithMe.comments.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -11,6 +11,6 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class NewCommentDto {
 
-    @NotNull
+    @NotBlank
     private String text;
 }
