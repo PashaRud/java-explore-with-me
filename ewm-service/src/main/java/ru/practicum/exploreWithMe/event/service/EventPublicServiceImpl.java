@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.exploreWithMe.client.StatsClient;
+import ru.practicum.exploreWithMe.comments.model.Comment;
+import ru.practicum.exploreWithMe.comments.service.CommentService;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.enums.State;
@@ -16,6 +18,7 @@ import ru.practicum.exploreWithMe.exception.ValidateException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,6 +30,7 @@ import static java.util.stream.Collectors.toList;
 public class EventPublicServiceImpl implements EventPublicService {
 
     private final EventRepository repository;
+    private final CommentService commentService;
     private final StatsClient statsClient;
 
     @Override
@@ -66,7 +70,9 @@ public class EventPublicServiceImpl implements EventPublicService {
     public EventFullDto getEventById(Long id, HttpServletRequest request) {
         eventValidation(id);
         saveEndpointHit(request);
-        EventFullDto dto = EventFullMapper.eventToEventFullDto(repository.findById(id).get());
+        Event event = repository.findById(id).get();
+        Collection<Comment> comments = commentService.findAllCommentsByEvent(event.getId());
+        EventFullDto dto = EventFullMapper.eventToEventFullDto(event, comments);
         if (!State.PUBLISHED.equals(dto.getState())) {
             throw new ForbiddenException("Event not published.");
         }

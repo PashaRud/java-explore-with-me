@@ -1,6 +1,9 @@
 package ru.practicum.exploreWithMe.event.mapper;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.exploreWithMe.comments.dto.CommentDto;
+import ru.practicum.exploreWithMe.comments.mapper.CommentsMapper;
+import ru.practicum.exploreWithMe.comments.model.Comment;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
 import ru.practicum.exploreWithMe.location.Location;
@@ -12,6 +15,11 @@ import ru.practicum.exploreWithMe.event.model.Event;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+import static ru.practicum.exploreWithMe.category.mapper.CategoryMapper.toCategoryDto;
 
 @Component
 public class EventFullMapper {
@@ -38,13 +46,19 @@ public class EventFullMapper {
                 .build();
     }
 
-    public static EventFullDto eventToEventFullDto(Event event) {
-
+    public static EventFullDto eventToEventFullDto(Event event, Collection<Comment> comments) {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Collection<CommentDto> commentDto = event.getComments().stream()
+                .map(comment -> CommentsMapper.fromCommentToCommentDto(comment))
+                .collect(Collectors.toList());
+        if(comments != null) {
+            commentDto.clear();
+            comments.forEach(comment -> commentDto.add(CommentsMapper.fromCommentToCommentDto(comment)));
+        }
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .category(toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
                 .createdOn(event.getCreatedOn().format(formatter))
                 .description(event.getDescription())
@@ -57,6 +71,7 @@ public class EventFullMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
+                .comments(commentDto)
                 .build();
     }
 
@@ -65,7 +80,7 @@ public class EventFullMapper {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .category(toCategoryDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
                 .eventDate(event.getEventDate().format(formatter))
                 .initiator(UserMapper.toShortUserDto(event.getInitiator()))

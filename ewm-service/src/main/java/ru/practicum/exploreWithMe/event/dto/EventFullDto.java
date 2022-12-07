@@ -2,11 +2,13 @@ package ru.practicum.exploreWithMe.event.dto;
 
 import lombok.*;
 import ru.practicum.exploreWithMe.category.dto.CategoryDto;
+import ru.practicum.exploreWithMe.comments.dto.CommentDto;
 import ru.practicum.exploreWithMe.location.Location;
 import ru.practicum.exploreWithMe.user.dto.UserShortDto;
 import ru.practicum.exploreWithMe.enums.State;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -37,4 +39,5 @@ public class EventFullDto {
     private String title;
     private Long views;
     private State state;
+    private Collection<CommentDto> comments;
 }
