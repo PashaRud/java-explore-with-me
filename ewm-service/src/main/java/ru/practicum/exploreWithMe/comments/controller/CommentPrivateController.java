@@ -13,12 +13,12 @@ import javax.validation.Valid;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(path = "/users/{userId}")
+@RequestMapping(path = "/users")
 public class CommentPrivateController {
 
     private final CommentService service;
 
-    @PostMapping(value = "/events/{eventId}/comments")
+    @PostMapping(value = "/{userId}/events/{eventId}/comments")
     public CommentDto createComment(@RequestBody @Valid NewCommentDto commentDto,
                                     @PathVariable Long eventId,
                                     @PathVariable Long userId) {
@@ -34,7 +34,7 @@ public class CommentPrivateController {
         return service.patchComment(commentDto, eventId, commentId);
     }
 
-    @DeleteMapping(value = {"/comments/{commentId}"})
+    @DeleteMapping(value = {"/{userId}/comments/{commentId}"})
     public void deleteCommentById(@PathVariable Long userId,
                                   @PathVariable Long commentId) {
         log.info("Delete comment " + commentId + " for eventId: " + userId);

@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS comments
     event_id   BIGINT                                              NOT NULL,
     created_on TIMESTAMP WITHOUT TIME ZONE                         NOT NULL,
     FOREIGN KEY (author_id) REFERENCES users (id),
-    CONSTRAINT FK_COMMENT_ON_AUTHOR FOREIGN KEY (author_id) REFERENCES users (id)
+    CONSTRAINT FK_COMMENT_ON_AUTHOR FOREIGN KEY (author_id) REFERENCES users (id),
+    CONSTRAINT FK_COMMENT_ON_EVENT FOREIGN KEY (event_id) REFERENCES events (id)
 );
 
 CREATE TABLE IF NOT EXISTS events
@@ -47,8 +48,6 @@ CREATE TABLE IF NOT EXISTS events
     participant_limit  INT                                                 NOT NULL,
     request_moderation BOOLEAN                                             NOT NULL,
     state              VARCHAR(256)                                        NOT NULL,
-    comment_id         BIGINT,
-    FOREIGN KEY (comment_id) REFERENCES comments (id),
     FOREIGN KEY (category_id) REFERENCES categories (id),
     FOREIGN KEY (initiator_id) REFERENCES users (id)
 );

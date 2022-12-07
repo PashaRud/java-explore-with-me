@@ -5,9 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.exploreWithMe.comments.model.Comment;
-import ru.practicum.exploreWithMe.comments.repository.CommentRepository;
-import ru.practicum.exploreWithMe.comments.service.CommentService;
 import ru.practicum.exploreWithMe.enums.Status;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
@@ -30,7 +27,6 @@ import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,8 +43,6 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
-    private final CommentService commentService;
-
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
@@ -108,8 +102,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (event.getState().equals(State.CANCELED)) {
             event.setState(State.PENDING);
         }
-        Collection<Comment> comments = commentService.findAllCommentsByEvent(event.getId());
-        EventFullDto dto = EventFullMapper.eventToEventFullDto(eventRepository.save(event), comments);
+        EventFullDto dto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
         log.info("update event: " + dto.getId());
         return dto;
     }
@@ -122,6 +115,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (LocalDateTime.parse(dto.getEventDate(), formatter).isBefore(now.plusHours(2))) {
             throw new ValidateException("Cannot be published closer than 2 hours before the start of the event");
         }
+
         Event event = new Event(dto.getId(),
                 dto.getAnnotation(),
                 dto.getDescription(),
@@ -137,10 +131,9 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 dto.isPaid(),
                 dto.getParticipantLimit(),
                 dto.getRequestModeration(),
-                State.PENDING,
-                null);
+                State.PENDING);
         eventRepository.save(event);
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event, null);
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event);
         log.info("post event" + eventFullDto.getId());
         return eventFullDto;
     }
@@ -152,8 +145,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Event event = eventRepository.findById(eventId).get();
         Long iniciatorId = event.getInitiator().getId();
         initiatorValidation(userId, iniciatorId);
-        Collection<Comment> comments = commentService.findAllCommentsByEvent(event.getId());
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event), comments);
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
         log.info("get Event: " + eventId);
         return eventFullDto;
     }
@@ -169,8 +161,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
             throw new ValidateException("Only PENDING state events can be cancelled");
         }
         event.setState(State.CANCELED);
-        Collection<Comment> comments = commentService.findAllCommentsByEvent(event.getId());
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event), comments);
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.save(event));
         log.info("cancel event" + eventId);
         return eventFullDto;
     }
@@ -194,8 +185,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public ParticipationRequestDto confirmRequest(Long userId, Long eventId, Long reqId) {
         eventValidation(eventId);
         userValidation(userId);
-        Event event = eventRepository.findById(eventId).get();
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event, event.getComments());
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.findById(eventId).get());
         if (!eventFullDto.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Can only be confirmed by the initiator");
         }
@@ -217,8 +207,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public ParticipationRequestDto rejectRequest(Long userId, Long eventId, Long reqId) {
         eventValidation(eventId);
         userValidation(userId);
-        Event event = eventRepository.findById(eventId).get();
-        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(event, event.getComments());
+
+        EventFullDto eventFullDto = EventFullMapper.eventToEventFullDto(eventRepository.findById(eventId).get());
         if (!eventFullDto.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Can only be confirmed by the initiator");
         }

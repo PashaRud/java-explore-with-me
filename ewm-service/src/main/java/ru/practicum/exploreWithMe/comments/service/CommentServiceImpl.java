@@ -78,11 +78,6 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Collection<Comment> findAllCommentsByEvent(Long eventId) {
-        return repository.findByEventIdOrderByCreatedDesc(eventId);
-    }
-
     private void eventValidation(Long id) {
         if (!eventRepository.existsById(id)) {
             throw new NotFoundException("Event with id = " + id + " not found");

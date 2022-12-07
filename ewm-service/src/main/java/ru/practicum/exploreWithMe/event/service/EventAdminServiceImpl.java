@@ -5,10 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.exploreWithMe.comments.dto.CommentDto;
-import ru.practicum.exploreWithMe.comments.mapper.CommentsMapper;
-import ru.practicum.exploreWithMe.comments.model.Comment;
-import ru.practicum.exploreWithMe.comments.service.CommentService;
 import ru.practicum.exploreWithMe.event.dto.EventFullDto;
 import ru.practicum.exploreWithMe.event.dto.UpdateEventRequest;
 import ru.practicum.exploreWithMe.enums.State;
@@ -22,9 +18,7 @@ import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static ru.practicum.exploreWithMe.event.mapper.EventFullMapper.eventToEventFullDto;
@@ -37,7 +31,6 @@ public class EventAdminServiceImpl implements EventAdminService {
 
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
-    private final CommentService commentService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
@@ -93,12 +86,10 @@ public class EventAdminServiceImpl implements EventAdminService {
         if ((categories == null) && (users != null)) {
             events = eventRepository.findByUsersAndStates(users, states, pageable);
         }
-        List<EventFullDto> eventFullDtos = new ArrayList<>();
-        events.forEach(e -> {
-//            Collection<Comment> comments = commentService.findAllCommentsByEvent(e.getId());
-            eventFullDtos.add(eventToEventFullDto(e, null));
-        });
 
+        List<EventFullDto> eventFullDtos = events.stream()
+                .map(event -> eventToEventFullDto(event))
+                .collect(toList());
         log.info("get events");
         return eventFullDtos;
     }
@@ -137,8 +128,7 @@ public class EventAdminServiceImpl implements EventAdminService {
 
         event = eventRepository.save(event);
         log.info("update Event: " + eventId);
-        Collection<Comment> comments = commentService.findAllCommentsByEvent(event.getId());
-        return eventToEventFullDto(event, comments);
+        return eventToEventFullDto(event);
     }
 
     @Override
@@ -153,7 +143,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             throw new ValidateException("Too late to update this event.");
         }
         event.setState(State.PUBLISHED);
-        EventFullDto eventDto = eventToEventFullDto(eventRepository.save(event), null);
+        EventFullDto eventDto = eventToEventFullDto(eventRepository.save(event));
         log.info("publish Event: " + eventId);
         return eventDto;
     }
@@ -167,8 +157,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             throw new ValidateException("Cannot be rejected");
         }
         event.setState(State.CANCELED);
-        Collection<Comment> comments = commentService.findAllCommentsByEvent(event.getId());
-        EventFullDto eventDto = eventToEventFullDto(eventRepository.save(event), comments);
+        EventFullDto eventDto = eventToEventFullDto(eventRepository.save(event));
         log.info("reject Event: " + eventId);
         return eventDto;
     }

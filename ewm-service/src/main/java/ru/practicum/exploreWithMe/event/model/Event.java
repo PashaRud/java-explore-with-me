@@ -56,7 +56,4 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
     private State state;
-    @OneToMany
-    @JoinColumn(name = "comment_id")
-    private Set<Comment> comments;
 }
