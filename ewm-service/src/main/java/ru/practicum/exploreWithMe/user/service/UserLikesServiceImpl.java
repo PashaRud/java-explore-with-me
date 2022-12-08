@@ -6,19 +6,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
-import ru.practicum.exploreWithMe.event.mapper.EventFullMapper;
 import ru.practicum.exploreWithMe.event.model.Event;
 import ru.practicum.exploreWithMe.event.repository.EventRepository;
 import ru.practicum.exploreWithMe.exception.AlreadyExistsException;
 import ru.practicum.exploreWithMe.exception.NotFoundException;
+import ru.practicum.exploreWithMe.user.dto.UserDislikeDto;
 import ru.practicum.exploreWithMe.user.dto.UserLikesDto;
 import ru.practicum.exploreWithMe.user.model.User;
 import ru.practicum.exploreWithMe.user.repository.UserRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.practicum.exploreWithMe.event.mapper.EventFullMapper.eventToEventShortDto;
+import static ru.practicum.exploreWithMe.user.mapper.UserMapper.toUserDisikesDto;
 import static ru.practicum.exploreWithMe.user.mapper.UserMapper.toUserLikesDto;
 
 @Service
@@ -37,6 +40,9 @@ public class UserLikesServiceImpl implements UserLikesService {
         userValidation(userId);
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
+        if(isDisliked(userId, event)) {
+            removeDislikesForTheEvent(userId, eventId);
+        }
         if(user.getLikes().contains(event)) {
             throw new AlreadyExistsException("Event already liked");
         }
@@ -51,7 +57,7 @@ public class UserLikesServiceImpl implements UserLikesService {
         userValidation(userId);
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
-        if(user.getLikes().contains(event)) {
+        if(!user.getLikes().contains(event)) {
             throw new NotFoundException("You doesn't liked this event: " + eventId);
         }
         user.getLikes().remove(event);
@@ -61,26 +67,54 @@ public class UserLikesServiceImpl implements UserLikesService {
     public Set<EventShortDto> getEventLikedByUser(Long userId, int from, int size) {
         userValidation(userId);
         Pageable pageable = FromSizeRequest.of(from, size);
-        Set<EventShortDto> eventDtos = eventRepository.findAll(pageable).stream()
-                .map(EventFullMapper::eventToEventShortDto)
-                .collect(Collectors.toSet());
-        log.info("get liked events for userId: " + userId);
-        return eventDtos;
+        List<Event> events = eventRepository.findEventsByUserLikes(userId, pageable);
+                Set<EventShortDto> eventShortDtos = events.stream()
+                        .map(event -> eventToEventShortDto(event))
+                        .collect(Collectors.toSet());
+        log.info("Get liked events for userId: " + userId);
+        return eventShortDtos;
     }
 
     @Override
-    public UserLikesDto addDislikesForTheEvent(Long userId, Long EventId) {
-        return null;
+    @Transactional
+    public UserDislikeDto addDislikesForTheEvent(Long userId, Long eventId) {
+        eventValidation(eventId);
+        userValidation(userId);
+        User user = userRepository.findById(userId).get();
+        Event event = eventRepository.findById(eventId).get();
+        if(isLiked(userId, event)) {
+            removeLikesForTheEvent(userId, eventId);
+        }
+        if(user.getLikes().contains(event)) {
+            throw new AlreadyExistsException("Event already disliked");
+        }
+        user.getDislikes().add(event);
+        return toUserDisikesDto(user);
     }
 
     @Override
-    public void removeDislikesForTheEvent(Long userId, Long EventId) {
-
+    @Transactional
+    public void removeDislikesForTheEvent(Long userId, Long eventId) {
+        eventValidation(eventId);
+        userValidation(userId);
+        User user = userRepository.findById(userId).get();
+        Event event = eventRepository.findById(eventId).get();
+        if(!user.getDislikes().contains(event)) {
+            throw new NotFoundException("You doesn't dislike this event: " + eventId);
+        }
+        user.getDislikes().remove(event);
     }
 
     @Override
     public Set<EventShortDto> getEventDislikedByUser(Long userId, int from, int size) {
-        return null;
+        userValidation(userId);
+        Pageable pageable = FromSizeRequest.of(from, size);
+        List<Event> events = eventRepository.findEventsByUserDislikes(userId, pageable);
+        Set<EventShortDto> eventShortDtos = events.stream()
+                .map(event -> eventToEventShortDto(event))
+                .collect(Collectors.toSet());
+        log.info("Get disliked events for userId: " + userId);
+        return eventShortDtos;
     }
 
     private void eventValidation(Long id) {
@@ -93,5 +127,21 @@ public class UserLikesServiceImpl implements UserLikesService {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("User with id = " + id + " not found");
         }
+    }
+
+    private boolean isLiked(Long userId, Event event) {
+        if(userRepository.findById(userId).get()
+                .getLikes().contains(event)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDisliked(Long userId, Event event) {
+        if(userRepository.findById(userId).get()
+                .getDislikes().contains(event)) {
+            return true;
+        }
+        return false;
     }
 }

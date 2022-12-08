@@ -1,6 +1,7 @@
 package ru.practicum.exploreWithMe.user.service;
 
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
+import ru.practicum.exploreWithMe.user.dto.UserDislikeDto;
 import ru.practicum.exploreWithMe.user.dto.UserLikesDto;
 
 import java.util.Set;
@@ -13,7 +14,7 @@ public interface UserLikesService {
 
     Set<EventShortDto> getEventLikedByUser(Long userId, int from, int size);
 
-    UserLikesDto addDislikesForTheEvent(Long userId, Long EventId);
+    UserDislikeDto addDislikesForTheEvent(Long userId, Long EventId);
 
     void removeDislikesForTheEvent(Long userId, Long EventId);
 

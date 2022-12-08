@@ -7,10 +7,10 @@ import ru.practicum.exploreWithMe.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -53,4 +53,19 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
     private State state;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Event event = (Event) o;
+
+        return id.equals(event.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

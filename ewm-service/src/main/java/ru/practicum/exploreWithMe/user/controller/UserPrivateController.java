@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.event.dto.EventShortDto;
+import ru.practicum.exploreWithMe.user.dto.UserDislikeDto;
 import ru.practicum.exploreWithMe.user.dto.UserLikesDto;
 import ru.practicum.exploreWithMe.user.service.UserLikesService;
 
@@ -23,7 +24,7 @@ public class UserPrivateController {
     private final UserLikesService userService;
 
     @GetMapping(value = "/likes")
-    public Set<EventShortDto> getEventLikedByUser(@RequestParam Long userId,
+    public Set<EventShortDto> getEventLikedByUser(@PathVariable Long userId,
                                                   @RequestParam(name = "from", defaultValue = "0")
                                           @PositiveOrZero int from,
                                                   @RequestParam(name = "size", defaultValue = "10")
@@ -33,21 +34,21 @@ public class UserPrivateController {
     }
 
     @PostMapping(value = "/likes/{eventId}")
-    public UserLikesDto addLikesForTheEvent(@RequestParam Long userId,
-                                            @RequestParam Long eventId) {
+    public UserLikesDto addLikesForTheEvent(@PathVariable Long userId,
+                                            @PathVariable Long eventId) {
         log.info("add likes by userId: " + userId + " for the event: " + eventId);
         return userService.addLikesForTheEvent(userId, eventId);
     }
 
     @DeleteMapping(value = "/likes/{eventId}")
-    public void removeLikesForTheEvent(@RequestParam Long userId,
-                                       @RequestParam Long eventId) {
+    public void removeLikesForTheEvent(@PathVariable Long userId,
+                                       @PathVariable Long eventId) {
         log.info("remove likes by userId: " + userId + " for the event: " + eventId);
         userService.removeLikesForTheEvent(userId, eventId);
     }
 
     @GetMapping(value = "/dislike")
-    public Set<EventShortDto> getEventDislikeByUser(@RequestParam Long userId,
+    public Set<EventShortDto> getEventDislikeByUser(@PathVariable Long userId,
                                                   @RequestParam(name = "from", defaultValue = "0")
                                                   @PositiveOrZero int from,
                                                   @RequestParam(name = "size", defaultValue = "10")
@@ -57,15 +58,15 @@ public class UserPrivateController {
     }
 
     @PostMapping(value = "/dislike/{eventId}")
-    public UserLikesDto addDislikeForTheEvent(@RequestParam Long userId,
-                                            @RequestParam Long eventId) {
+    public UserDislikeDto addDislikeForTheEvent(@PathVariable Long userId,
+                                                @PathVariable Long eventId) {
         log.info("add dislike by userId: " + userId + " for the event: " + eventId);
         return userService.addDislikesForTheEvent(userId, eventId);
     }
 
     @DeleteMapping(value = "/dislike/{eventId}")
-    public void removeDislikeForTheEvent(@RequestParam Long userId,
-                                       @RequestParam Long eventId) {
+    public void removeDislikeForTheEvent(@PathVariable Long userId,
+                                       @PathVariable Long eventId) {
         log.info("remove dislike by userId: " + userId + " for the event: " + eventId);
         userService.removeDislikesForTheEvent(userId, eventId);
     }

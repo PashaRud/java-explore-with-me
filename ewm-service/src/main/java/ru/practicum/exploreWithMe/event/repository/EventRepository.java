@@ -13,6 +13,16 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+    @Query("SELECT e FROM User u " +
+            "JOIN u.likes e " +
+            "WHERE u.id = ?1")
+    List<Event> findEventsByUserLikes(Long userId, Pageable page);
+
+    @Query("SELECT e FROM User u " +
+            "JOIN u.dislikes e " +
+            "WHERE u.id = ?1")
+    List<Event> findEventsByUserDislikes(Long userId, Pageable page);
+
     List<Event> findByInitiatorId(Long userId, Pageable page);
 
     @Query("SELECT e FROM Event e " +

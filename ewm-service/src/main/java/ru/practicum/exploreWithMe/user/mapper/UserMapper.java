@@ -1,10 +1,7 @@
 package ru.practicum.exploreWithMe.user.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.exploreWithMe.user.dto.NewUserRequest;
-import ru.practicum.exploreWithMe.user.dto.UserDto;
-import ru.practicum.exploreWithMe.user.dto.UserLikesDto;
-import ru.practicum.exploreWithMe.user.dto.UserShortDto;
+import ru.practicum.exploreWithMe.user.dto.*;
 import ru.practicum.exploreWithMe.user.model.User;
 
 import java.util.ArrayList;
@@ -23,6 +20,12 @@ public class UserMapper {
         return new UserLikesDto(user.getId(),
                 user.getName(),
                 user.getLikes());
+    }
+
+    public static UserDislikeDto toUserDisikesDto(User user) {
+        return new UserDislikeDto(user.getId(),
+                user.getName(),
+                user.getDislikes());
     }
 
     public static User newUserToUser(NewUserRequest request) {

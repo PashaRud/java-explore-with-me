@@ -79,4 +79,13 @@ CREATE TABLE IF NOT EXISTS likes
     CONSTRAINT pk_likes PRIMARY KEY (user_id, event_id),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
-)
+);
+
+CREATE TABLE IF NOT EXISTS dislikes
+(
+    user_id  BIGINT NOT NULL,
+    event_id BIGINT NOT NULL,
+    CONSTRAINT pk_dislikes PRIMARY KEY (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
+);
