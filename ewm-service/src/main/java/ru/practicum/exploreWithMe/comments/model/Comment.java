@@ -1,11 +1,8 @@
 package ru.practicum.exploreWithMe.comments.model;
 
 import lombok.*;
-import ru.practicum.exploreWithMe.event.model.Event;
-import ru.practicum.exploreWithMe.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity

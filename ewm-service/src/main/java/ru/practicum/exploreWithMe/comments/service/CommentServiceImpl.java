@@ -71,6 +71,15 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public void deleteCommentByAdmin(Long commentId) {
+        Comment comment = repository.findById(commentId)
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Comment with id: " + commentId + " does not exist");
+                });
+        repository.deleteById(comment.getId());
+    }
+
+    @Override
     public Collection<CommentDto> findAllCommentsByEvent(Long eventId, int from, int size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
@@ -97,7 +106,8 @@ public class CommentServiceImpl implements CommentService {
             throw new NotFoundException("Comment with id: " + commentId + " does not exist");
         });
         if (!comment.get().getAuthorId().equals(userId)) {
-            throw new ValidateException("User with id " + userId + " not the author of the comment c id " + commentId);
+            throw new ValidateException("User with id " + userId +
+                    " not the author of the comment with id " + commentId);
         }
         return comment.get();
     }

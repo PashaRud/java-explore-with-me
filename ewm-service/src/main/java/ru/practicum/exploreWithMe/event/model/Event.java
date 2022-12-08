@@ -2,13 +2,11 @@ package ru.practicum.exploreWithMe.event.model;
 
 import lombok.*;
 import ru.practicum.exploreWithMe.category.model.Category;
-import ru.practicum.exploreWithMe.comments.model.Comment;
 import ru.practicum.exploreWithMe.enums.State;
 import ru.practicum.exploreWithMe.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Getter
