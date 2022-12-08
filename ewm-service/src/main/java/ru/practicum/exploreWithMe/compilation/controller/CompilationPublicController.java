@@ -27,7 +27,7 @@ public class CompilationPublicController {
                                                 @RequestParam(name = "size", defaultValue = "10")
                                                 @Positive int size) {
         List<CompilationDto> dtos = service.getCompilations(pinned, from, size);
-        log.info("get Compilations ");
+        log.info("get Compilations");
         return dtos;
     }
 

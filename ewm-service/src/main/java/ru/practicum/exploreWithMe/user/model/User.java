@@ -22,6 +22,8 @@ public class User {
     private String name;
     @Column(name = "email")
     private String email;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "likes", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
     Set<Event> likes;
 }

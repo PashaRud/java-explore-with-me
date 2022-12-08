@@ -31,6 +31,7 @@ public class UserLikesServiceImpl implements UserLikesService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserLikesDto addLikesForTheEvent(Long userId, Long eventId) {
         eventValidation(eventId);
         userValidation(userId);
@@ -39,11 +40,12 @@ public class UserLikesServiceImpl implements UserLikesService {
         if(user.getLikes().contains(event)) {
             throw new AlreadyExistsException("Event already liked");
         }
-        user.getLikes().add(eventRepository.findById(eventId).get());
+        user.getLikes().add(event);
         return toUserLikesDto(user);
     }
 
     @Override
+    @Transactional
     public void removeLikesForTheEvent(Long userId, Long eventId) {
         eventValidation(eventId);
         userValidation(userId);
@@ -52,7 +54,7 @@ public class UserLikesServiceImpl implements UserLikesService {
         if(user.getLikes().contains(event)) {
             throw new NotFoundException("You doesn't liked this event: " + eventId);
         }
-        user.getLikes().remove(eventRepository.findById(eventId));
+        user.getLikes().remove(event);
     }
 
     @Override
@@ -64,6 +66,21 @@ public class UserLikesServiceImpl implements UserLikesService {
                 .collect(Collectors.toSet());
         log.info("get liked events for userId: " + userId);
         return eventDtos;
+    }
+
+    @Override
+    public UserLikesDto addDislikesForTheEvent(Long userId, Long EventId) {
+        return null;
+    }
+
+    @Override
+    public void removeDislikesForTheEvent(Long userId, Long EventId) {
+
+    }
+
+    @Override
+    public Set<EventShortDto> getEventDislikedByUser(Long userId, int from, int size) {
+        return null;
     }
 
     private void eventValidation(Long id) {

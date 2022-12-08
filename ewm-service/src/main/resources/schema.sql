@@ -71,3 +71,12 @@ CREATE TABLE IF NOT EXISTS requests
     FOREIGN KEY (event_id) REFERENCES events (id),
     FOREIGN KEY (requester_id) REFERENCES users (id)
 );
+
+CREATE TABLE IF NOT EXISTS likes
+(
+    user_id  BIGINT NOT NULL,
+    event_id BIGINT NOT NULL,
+    CONSTRAINT pk_likes PRIMARY KEY (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
+)
