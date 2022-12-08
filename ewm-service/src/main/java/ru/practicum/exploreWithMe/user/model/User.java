@@ -1,8 +1,10 @@
 package ru.practicum.exploreWithMe.user.model;
 
 import lombok.*;
+import ru.practicum.exploreWithMe.event.model.Event;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,4 +22,6 @@ public class User {
     private String name;
     @Column(name = "email")
     private String email;
+    @ManyToMany
+    Set<Event> likes;
 }
