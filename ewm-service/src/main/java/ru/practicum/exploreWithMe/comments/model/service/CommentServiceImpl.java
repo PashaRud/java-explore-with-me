@@ -1,4 +1,4 @@
-package ru.practicum.exploreWithMe.comments.service;
+package ru.practicum.exploreWithMe.comments.model.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

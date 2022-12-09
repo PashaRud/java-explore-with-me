@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.exploreWithMe.comments.dto.CommentDto;
 import ru.practicum.exploreWithMe.comments.dto.NewCommentDto;
 import ru.practicum.exploreWithMe.comments.dto.UpdateCommentDto;
-import ru.practicum.exploreWithMe.comments.service.CommentService;
+import ru.practicum.exploreWithMe.comments.model.service.CommentService;
 
 import javax.validation.Valid;
 

@@ -1,4 +1,4 @@
-package ru.practicum.exploreWithMe.comments.service;
+package ru.practicum.exploreWithMe.comments.model.service;
 
 import ru.practicum.exploreWithMe.comments.dto.CommentDto;
 import ru.practicum.exploreWithMe.comments.dto.NewCommentDto;
