@@ -41,8 +41,10 @@ public class CommentServiceImpl implements CommentService {
         comment.setEventId(eventId);
         comment.setAuthorId(userId);
         try {
+            log.info("Create comment : " + commentDto.toString());
             return fromCommentToCommentDto(repository.save(comment));
         } catch (DataIntegrityViolationException e) {
+            log.info("Create comment. Catch DataIntegrityViolationException exception");
             throw new RuntimeException("Cannot save comment");
         }
     }
@@ -58,8 +60,10 @@ public class CommentServiceImpl implements CommentService {
         comment.setEventId(checkComment.getEventId());
         comment.setAuthorId(checkComment.getAuthorId());
         try {
+            log.info("Patch comment : " + commentDto.toString());
             return fromCommentToCommentDto(repository.save(comment));
         } catch (DataIntegrityViolationException e) {
+            log.info("Patch comment. Catch DataIntegrityViolationException exception");
             throw new RuntimeException("Cannot save comment");
         }
     }
@@ -67,6 +71,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteCommentById(Long commentId, Long userId) {
         Comment comment = getCommentById(commentId, userId);
+        log.info("Delete comment by userId : " + userId);
         repository.deleteById(comment.getId());
     }
 

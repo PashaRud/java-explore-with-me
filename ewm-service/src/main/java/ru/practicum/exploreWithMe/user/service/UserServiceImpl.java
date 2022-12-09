@@ -14,7 +14,6 @@ import ru.practicum.exploreWithMe.user.model.User;
 import ru.practicum.exploreWithMe.user.repository.UserRepository;
 import ru.practicum.exploreWithMe.utils.FromSizeRequest;
 
-
 import java.util.List;
 
 @Service

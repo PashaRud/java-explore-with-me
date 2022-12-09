@@ -13,7 +13,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Set;
 
-
 @RestController
 @Slf4j
 @Validated
@@ -26,9 +25,9 @@ public class UserPrivateController {
     @GetMapping(value = "/likes")
     public Set<EventShortDto> getEventLikedByUser(@PathVariable Long userId,
                                                   @RequestParam(name = "from", defaultValue = "0")
-                                          @PositiveOrZero int from,
+                                                  @PositiveOrZero int from,
                                                   @RequestParam(name = "size", defaultValue = "10")
-                                              @Positive int size) {
+                                                  @Positive int size) {
         log.info("get liked events by userId: " + userId);
         return userService.getEventLikedByUser(userId, from, size);
     }
