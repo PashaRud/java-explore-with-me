@@ -8,15 +8,15 @@ import java.util.Set;
 
 public interface UserLikesService {
 
-    UserLikesDto addLikesForTheEvent(Long userId, Long EventId);
+    UserLikesDto addLikesForTheEvent(Long userId, Long eventId);
 
-    void removeLikesForTheEvent(Long userId, Long EventId);
+    void removeLikesForTheEvent(Long userId, Long eventId);
 
     Set<EventShortDto> getEventLikedByUser(Long userId, int from, int size);
 
-    UserDislikeDto addDislikesForTheEvent(Long userId, Long EventId);
+    UserDislikeDto addDislikesForTheEvent(Long userId, Long eventId);
 
-    void removeDislikesForTheEvent(Long userId, Long EventId);
+    void removeDislikesForTheEvent(Long userId, Long eventId);
 
     Set<EventShortDto> getEventDislikedByUser(Long userId, int from, int size);
 }

@@ -40,10 +40,10 @@ public class UserLikesServiceImpl implements UserLikesService {
         userValidation(userId);
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
-        if(isDisliked(userId, event)) {
+        if (isDisliked(userId, event)) {
             removeDislikesForTheEvent(userId, eventId);
         }
-        if(user.getLikes().contains(event)) {
+        if (user.getLikes().contains(event)) {
             throw new AlreadyExistsException("Event already liked");
         }
         user.getLikes().add(event);
@@ -57,7 +57,7 @@ public class UserLikesServiceImpl implements UserLikesService {
         userValidation(userId);
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
-        if(!user.getLikes().contains(event)) {
+        if (!user.getLikes().contains(event)) {
             throw new NotFoundException("You doesn't liked this event: " + eventId);
         }
         user.getLikes().remove(event);
@@ -82,10 +82,10 @@ public class UserLikesServiceImpl implements UserLikesService {
         userValidation(userId);
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
-        if(isLiked(userId, event)) {
+        if (isLiked(userId, event)) {
             removeLikesForTheEvent(userId, eventId);
         }
-        if(user.getLikes().contains(event)) {
+        if (user.getLikes().contains(event)) {
             throw new AlreadyExistsException("Event already disliked");
         }
         user.getDislikes().add(event);
@@ -99,7 +99,7 @@ public class UserLikesServiceImpl implements UserLikesService {
         userValidation(userId);
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
-        if(!user.getDislikes().contains(event)) {
+        if (!user.getDislikes().contains(event)) {
             throw new NotFoundException("You doesn't dislike this event: " + eventId);
         }
         user.getDislikes().remove(event);
@@ -130,7 +130,7 @@ public class UserLikesServiceImpl implements UserLikesService {
     }
 
     private boolean isLiked(Long userId, Event event) {
-        if(userRepository.findById(userId).get()
+        if (userRepository.findById(userId).get()
                 .getLikes().contains(event)) {
             return true;
         }
@@ -138,7 +138,7 @@ public class UserLikesServiceImpl implements UserLikesService {
     }
 
     private boolean isDisliked(Long userId, Event event) {
-        if(userRepository.findById(userId).get()
+        if (userRepository.findById(userId).get()
                 .getDislikes().contains(event)) {
             return true;
         }

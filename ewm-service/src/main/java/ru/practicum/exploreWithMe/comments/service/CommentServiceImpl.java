@@ -88,9 +88,11 @@ public class CommentServiceImpl implements CommentService {
     public Collection<CommentDto> findAllCommentsByEvent(Long eventId, int from, int size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return repository.findByEventIdOrderByCreatedDesc(eventId, pageable).toList().stream()
+        Collection<CommentDto> allComments = repository.findByEventIdOrderByCreatedDesc(eventId, pageable).toList().stream()
                 .map(comment -> fromCommentToCommentDto(comment))
                 .collect(Collectors.toList());
+        log.info("Find all comments by eventId : " + eventId);
+        return allComments;
     }
 
     private void eventValidation(Long id) {
