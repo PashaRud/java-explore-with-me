@@ -13,7 +13,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-
 @RestController
 @Slf4j
 @Validated
@@ -43,6 +42,5 @@ public class UserAdminController {
     public void deleteUser(@PathVariable Long userId) {
         userService.delete(userId);
         log.info("delete User id: " + userId);
-
     }
 }

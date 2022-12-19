@@ -84,5 +84,4 @@ public class EventPublicServiceImpl implements EventPublicService {
     private void saveEndpointHit(HttpServletRequest request) {
         statsClient.addStats(request.getRequestURI(), request.getRemoteAddr());
     }
-
 }

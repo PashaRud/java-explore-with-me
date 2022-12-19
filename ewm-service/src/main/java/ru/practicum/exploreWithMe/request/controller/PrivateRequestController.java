@@ -27,7 +27,7 @@ public class PrivateRequestController {
     @PostMapping("/{userId}/requests")
     public ParticipationRequestDto saveRequest(@PathVariable Long userId,
                                   @RequestParam(name = "eventId", required = false) Long eventId) {
-        log.info("Creating request userId={}, eventId={}", userId, eventId);
+        log.info("Creating request userId: " + userId + ", eventId = " + eventId);
         if (eventId == null) {
             throw new ValidateException("incorrect eventId");
         }
