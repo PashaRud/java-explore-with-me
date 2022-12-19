@@ -30,4 +30,5 @@ public class User {
     @JoinTable(name = "dislikes", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     Set<Event> dislikes;
+    
 }
